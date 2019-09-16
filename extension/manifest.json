@@ -15,7 +15,7 @@
    		{
 			"matches": ["<all_urls>"],
 			"css": ["./stylesheet.css"],
-			"js": ["./jquery-3.4.1.min.js", "./scripts/model.js", "./scripts/controller.js", "./scripts/simonTest.js"],
+			"js": ["./jquery-3.4.1.min.js", "./scripts/simonTest.js"],
 			"run_at": "document_end"
 		}
 	],
