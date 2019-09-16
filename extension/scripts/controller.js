@@ -1,10 +1,15 @@
 var fish_caught_since_update = 0;
-var isFishingGame = false;
-var latestGame = null;
+var isFishingGame = false; // is this tab the fishing game?
+var latestGame = null; // store the game data
+// keep track of how much you've played the game
+var lastTimeBlurred = null;
+var lastTimeFocused = null;
+var focusedOnThisTab = true;
 
 
 $(document).ready(function(){
 	onTabLoad();
+	initializeIfNotFishingGame(); // just initialize and it'll get replaced by the fisherman one if it is fisherman
 });
 
 window.addEventListener('message', (event) => {
@@ -41,9 +46,55 @@ window.addEventListener('message', (event) => {
     }
 });
 
+function timeSinceTime(time) {
+	// get how long it's been in seconds
+	var d = new Date();
+	return (d - time)/1000;
+}
+
 function initializeIfIsFishingGame() {
-	window.onblur = function() { console.log('blur'); }
-	window.onfocus = function() { console.log('focus'); }
+	window.onblur = onFishergameBlur;
+	window.onfocus = onFishergameFocus;
+}
+
+function initializeIfNotFishingGame() {
+	// everything in this needs to be overwritten by the initializeIfIsFishingGame since we just run this no matter what
+	window.onblur = onTabBlur;
+	window.onfocus = onTabFocus;
+}
+
+function onFishergameFocus() {
+	console.log('focus');
+	var d = new Date();
+	var n = d.getTime();
+	lastTimeFocused = n;
+	focusedOnThisTab = true;
+	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+}
+
+function onFishergameBlur() {
+	console.log('blur');
+	var d = new Date();
+	var n = d.getTime();
+	lastTimeBlurred = n;
+	focusedOnThisTab = false;
+	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+}
+
+function onTabFocus() {
+	console.log('focus');
+	var d = new Date();
+	var n = d.getTime();
+	lastTimeFocused = n;
+	focusedOnThisTab = true;
+}
+
+function onTabBlur() {
+	console.log('blur');
+	var d = new Date();
+	var n = d.getTime();
+	lastTimeBlurred = n;
+	focusedOnThisTab = false
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -65,9 +116,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 function updateGameData(game) {
-	game.fish_caught += fish_caught_since_update;
-    fish_caught_since_update = 0;
+	if (isFishingGame) {
+		// only update this stuff if it's the fishing game
+		game.fish_caught += fish_caught_since_update;
+	    fish_caught_since_update = 0;
 
+	    game.lastTimeBlurred = lastTimeBlurred;
+	    game.lastTimeFocused = lastTimeFocused;
+
+	    console.log(timeSinceTime(game.lastTimeFocused) + " < focused . blurred > " + timeSinceTime(game.lastTimeBlurred));
+	}
     latestGame = game;
     return game;
 }
@@ -103,9 +161,27 @@ function refreshGame() {
 }
 
 function ifHasGame() {
+	var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
+
+	// if (timeSincePlayed / 600 < Math.random()) {
+	// 	// if it's less than 10 minutes then there's a chance it just discards this
+	// 	return;
+	// }
+
+	var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
+
+
 	// if it has a copy of the latestGame data then it knows it can run this!
 	for (var i = 0; i < model.headers.length; i++) {
-		$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
+		if (chanceToReplace < Math.random()) {
+			continue;
+		}
+		var choice = Math.random();
+		if (choice < .5) {
+			$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
+		} else {
+			$(model.headers[i]).text("You should go fishing!");
+		}
 	}
 }
 
@@ -113,7 +189,9 @@ function replaceAllImages(){
 	// console.log("Is fishing game? " + isFishingGame);
 	var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 
-	
+	if (!focusedOnThisTab) {
+		return; // only change things if you're looking at the tab? We may or may not want this idk.
+	}
 
 	// attempting to get background images and replace them
 	// var divs = document.getElementsByTagName("div");
@@ -131,12 +209,30 @@ function replaceAllImages(){
 	// 		}
 	// 	}
 	// }
+	console.log("HERE. Time since: " + timeSinceTime(latestGame.lastTimeBlurred) + " " + timeSinceTime(latestGame.lastTimeFocused));
+	if (latestGame.lastTimeFocused > latestGame.lastTimeBlurred) {
+		// then you're currently playing it so return
+		return
+	}
+	// console.log("Made it past the gauntlet");
+	var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
+
+	if (timeSincePlayed / 600 < Math.random()) {
+		// if it's less than 10 minutes then there's a chance it just discards this
+		return;
+	}
+
+	var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
 
 	if (latestGame) {
 		ifHasGame();
 	}
 	
 	for(var i = 0; i < model.images.length; i++){
+		if (chanceToReplace < Math.random()) {
+			continue;
+		}
+
 		// if($(model.images[i]).id === "fishGif"){
 		// 	continue;
 		// }
@@ -148,7 +244,6 @@ function replaceAllImages(){
 		// the class in twitter seems to be the same, so we can use that to get background images
 		// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
 		// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-
 		$(model.images[i]).removeAttr("ng-src");
 		$(model.images[i]).removeAttr("srcset");
 
@@ -160,6 +255,7 @@ function replaceAllImages(){
 		// }
 
 		model.images[i].src = fishSrc;
+		// console.log("Replaced something");
 	}
 	// console.log("update");
 }
