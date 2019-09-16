@@ -42,7 +42,7 @@ window.addEventListener('message', (event) => {
     }
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.message === "updateGame"){
     	// gets the latest version of game on this script, updates it, and sends it back!
     	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: updateGameData(request.data.game)}, function(){});
@@ -55,6 +55,8 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
     	// tell them what your copy of the game is
     	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: result}, function(){});
     }
+
+    sendResponse( {response:"Dummy response"} );
 });
 
 function updateGameData(game) {
@@ -69,6 +71,7 @@ function askIfFishingGame() {
 }
 
 function onTabLoad() {
+	console.log("this is the fishing game one");
 	chrome.runtime.sendMessage({message: "getGame" }, function(){});
 	// run some things once:
 	askIfFishingGame();

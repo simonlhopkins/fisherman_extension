@@ -4,29 +4,18 @@ var latestGame = null;
 
 
 $(document).ready(function(){
-	// var fishGifSrc = chrome.runtime.getURL("images/fishGif.gif");
-	// var fishGif = $("body").append("<img src = '"+fishGifSrc+"' id = 'fishGif'></img>");
-	// var theta = 0;
-	// setInterval(function(){
-	// 	theta += 0.1;
-	// 	$("html").offset({'top':Math.sin(theta)*100});
-	// 	$("html").offset({'left':Math.cos(theta)*500});
-	// 	console.log(fishGif.offset());
-	// }, 10);
+	// called when the tab is loaded and ready to use!
 	onTabLoad();
 });
 
 window.addEventListener('message', (event) => {
-    // console.log(`Received message: ${event.data}`);
+    // receives messages from the window, (This is mainly used to receive messages from the fisherman game)
     if (event.source != window)
         return;
 
     if (event.data.type && (event.data.type === "FROM_PAGE")) {
     	if (event.data.message && (event.data.message === "Caught a fish!")) {
-    		// then update our fish caught count
-    		fish_caught_since_update += event.data.number;
-    		// console.log("Caught " + fish_caught_since_update + " fish since update");
-    		chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+    		// game caught a fish!
     	}
     	else if (event.data.message && (event.data.message === "I'm the fishing game!")) {
     		// then update our fish caught count
@@ -48,7 +37,7 @@ window.addEventListener('message', (event) => {
     }
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender) {
 	// console.log(sender);
     if (request.message === "updateGame"){
     	// gets the latest version of game on this script, updates it, and sends it back!
@@ -63,7 +52,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: result}, function(){});
     }
     // console.log("Controller recieved runtime message " + request);
-    sendResponse( {response:"Dummy response"} );
 });
 
 function updateGameData(game) {
@@ -76,13 +64,12 @@ function updateGameData(game) {
 
 function askIfFishingGame() {
 	// ask the tab if it's the fishing game
-	console.log("Checked if fishing game");
+	// console.log("Checked if fishing game");
 	var data = { type: "FROM_PAGE", message: "Are you the fishing game?" };
     window.postMessage(data, "*");
 }
 
 function onTabLoad() {
-	console.log("Tab loaded fn");
 	chrome.runtime.sendMessage({message: "getGame" }, function(){});
 	// run some things once:
 	askIfFishingGame();

@@ -22,7 +22,7 @@ chrome.storage.sync.get(['game'], function(result) {
 
 
 
-chrome.runtime.onMessage.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	console.log(request)
 	//if they want to just view the game data
     if (request.message === "getGame"){
@@ -62,5 +62,5 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 		});
     }
 
-
+    sendResponse( {response:"Dummy response"} );
 });
