@@ -22,13 +22,13 @@ window.addEventListener('message', (event) => {
         return;
 
     if (event.data.type && (event.data.type === "FROM_PAGE")) {
-    	if (event.data.text && (event.data.text === "Caught a fish!")) {
+    	if (event.data.message && (event.data.message === "Caught a fish!")) {
     		// then update our fish caught count
     		fish_caught_since_update += event.data.number;
     		// console.log("Caught " + fish_caught_since_update + " fish since update");
     		chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
     	}
-    	else if (event.data.text && (event.data.text === "I'm the fishing game!")) {
+    	else if (event.data.message && (event.data.message === "I'm the fishing game!")) {
     		// then update our fish caught count
     		isFishingGame = true;
     		console.log("This is the fishing game!");
@@ -43,7 +43,7 @@ window.addEventListener('message', (event) => {
             event.source.postMessage(data, "*"); // should only send it to who asked
         }
     	else {
-	        console.log("Controller script received message: " + event.data.text);
+	        console.log("Controller script received message: " + event.data.message);
 	    }
     }
 });
@@ -75,7 +75,8 @@ function updateGameData(game) {
 
 function askIfFishingGame() {
 	// ask the tab if it's the fishing game
-	var data = { type: "FROM_PAGE", text: "Are you the fishing game?" };
+	console.log("Checked if fishing game");
+	var data = { type: "FROM_PAGE", message: "Are you the fishing game?" };
     window.postMessage(data, "*");
 }
 

@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 
     if (request.message === "requestUpdateGame") {
     	// console.log("background update game, is this supposed to happen?");
-    	console.log("Recieved request update game");
+    	// console.log("Recieved request update game");
     	chrome.storage.sync.get(['game'], function(result) {
     		chrome.tabs.sendMessage(sender.tab.id, {message: "updateGame", data: result}, function(){});
 		});
