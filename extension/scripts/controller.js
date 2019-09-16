@@ -4,15 +4,6 @@ var latestGame = null;
 
 
 $(document).ready(function(){
-	// var fishGifSrc = chrome.runtime.getURL("images/fishGif.gif");
-	// var fishGif = $("body").append("<img src = '"+fishGifSrc+"' id = 'fishGif'></img>");
-	// var theta = 0;
-	// setInterval(function(){
-	// 	theta += 0.1;
-	// 	$("html").offset({'top':Math.sin(theta)*100});
-	// 	$("html").offset({'left':Math.cos(theta)*500});
-	// 	console.log(fishGif.offset());
-	// }, 10);
 	onTabLoad();
 });
 
@@ -82,7 +73,7 @@ function askIfFishingGame() {
 }
 
 function onTabLoad() {
-	console.log("Tab loaded fn");
+	// console.log("Tab loaded fn");
 	chrome.runtime.sendMessage({message: "getGame" }, function(){});
 	// run some things once:
 	askIfFishingGame();
@@ -99,19 +90,19 @@ function onTabLoad() {
 		}}, 1000);
 }
 
-function ifHasGame() {
-	for (var i = 0; i < model.headers.length; i++) {
-		$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
-	}
-}
-
 function refreshGame() {
 	chrome.runtime.sendMessage({message: "getGame"}, function(){});
 	replaceAllImages();
 }
 
-function replaceAllImages(){
+function ifHasGame() {
+	// if it has a copy of the latestGame data then it knows it can run this!
+	for (var i = 0; i < model.headers.length; i++) {
+		$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
+	}
+}
 
+function replaceAllImages(){
 	// console.log("Is fishing game? " + isFishingGame);
 	var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 
