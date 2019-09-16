@@ -82,23 +82,28 @@ function clickFunction()
     point.x = Number(window.event.clientX - svgx);
     point.y = Number(window.event.clientY - svgy);
 
+    var fishCaughtThisTime = 0;
     for (var x = 0; x < numFishes; x++)
     {
         if (pointInFish(point, fishes[x]))
         {
             if (fishes[x].visible) {
                 fishes[x].visible = false;
-                notifyFishCaught();
-                requestNextLine(); // just for testing
+                fishCaughtThisTime++;
             }
         }
     }
+    if (fishCaughtThisTime > 0) {
+        notifyFishCaught(fishCaughtThisTime);
+        requestNextLine(); // just for testing
+    }
 }
 
-function notifyFishCaught()
+function notifyFishCaught(number)
 {
+    // console.log("Caught "+ number);
     // console.log("FISH!!");
-    var data = { type: "FROM_PAGE", message: "Caught a fish!", number: 1 };
+    var data = { type: "FROM_PAGE", message: "Caught a fish!", number: number };
     window.postMessage(data, "*");
 }
 
