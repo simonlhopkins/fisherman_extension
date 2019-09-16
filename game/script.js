@@ -2,6 +2,7 @@ var fishes = [];
 var numFishes = 10;
 var CANVAS_WIDTH = 600;
 var CANVAS_HEIGHT = 600;
+var latestGame = null; // copy of the meta-game data
 
 
 function main()
@@ -96,7 +97,7 @@ function clickFunction()
 function notifyFishCaught()
 {
     // console.log("FISH!!");
-    var data = { type: "FROM_PAGE", text: "Caught a fish!", number: 1 };
+    var data = { type: "FROM_PAGE", message: "Caught a fish!", number: 1 };
     window.postMessage(data, "*");
 }
 
@@ -106,11 +107,21 @@ window.addEventListener('message', (event) => {
         return;
 
     if (event.data.type && (event.data.type === "FROM_PAGE")) {
-        if (event.data.text && (event.data.text === "Are you the fishing game?")) {
-            var data = { type: "FROM_PAGE", text: "I'm the fishing game!" };
+        if (event.data.message && (event.data.message === "Are you the fishing game?")) {
+            var data = { type: "FROM_PAGE", message: "I'm the fishing game!" };
             window.postMessage(data, "*");
         }
-        console.log("Fishing Game script received message: " + event.data.text);
+        else if (event.data.message === "setGame"){
+            // overwrite the game stored on this script
+            latestGame = event.data.data;
+        }
+        else if (event.data.message === "getGame"){
+            // tell them what your copy of the game is
+            var data = { type: "FROM_PAGE", message: "setGame", data: latestGame };
+            event.source.postMessage(data, "*"); // should only send it to who asked
+        } else {
+            console.log("Fishing Game script received unknown message: " + event.data.message);
+        }
     }
 });
 

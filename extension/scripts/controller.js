@@ -28,12 +28,23 @@ window.addEventListener('message', (event) => {
     		// console.log("Caught " + fish_caught_since_update + " fish since update");
     		chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
     	}
-    	if (event.data.text && (event.data.text === "I'm the fishing game!")) {
+    	else if (event.data.text && (event.data.text === "I'm the fishing game!")) {
     		// then update our fish caught count
     		isFishingGame = true;
     		console.log("This is the fishing game!");
     	}
-        console.log("Controller script received message: " + event.data.text);
+    	else if (event.data.message === "setGame"){
+            // overwrite the game stored on this script
+            latestGame = event.data.data;
+        }
+        else if (event.data.message === "getGame"){
+            // tell them what your copy of the game is
+            var data = { type: "FROM_PAGE", message: "setGame", data: latestGame };
+            event.source.postMessage(data, "*"); // should only send it to who asked
+        }
+    	else {
+	        console.log("Controller script received message: " + event.data.text);
+	    }
     }
 });
 
