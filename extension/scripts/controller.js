@@ -1,5 +1,6 @@
 var fish_caught_since_update = 0;
 var isFishingGame = false;
+var latestGame = null;
 
 
 $(document).ready(function(){
@@ -24,7 +25,7 @@ window.addEventListener('message', (event) => {
     	if (event.data.text && (event.data.text === "Caught a fish!")) {
     		// then update our fish caught count
     		fish_caught_since_update += event.data.number;
-    		console.log("Caught " + fish_caught_since_update + " fish since update");
+    		// console.log("Caught " + fish_caught_since_update + " fish since update");
     	}
     	if (event.data.text && (event.data.text === "I'm the fishing game!")) {
     		// then update our fish caught count
@@ -44,6 +45,8 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 function updateGameData(game) {
 	game.fish_caught += fish_caught_since_update;
     fish_caught_since_update = 0;
+
+    latestGame = game;
     return game
 }
 
@@ -54,6 +57,7 @@ function askIfFishingGame() {
 }
 
 function onTabLoad() {
+	chrome.runtime.sendMessage({message: "requestGameData" }, function(){});
 	// run some things once:
 	askIfFishingGame();
 
@@ -71,7 +75,7 @@ function onTabLoad() {
 
 function replaceAllImages(){
 
-	console.log("Is fishing game? " + isFishingGame);
+	// console.log("Is fishing game? " + isFishingGame);
 	var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 
 	for(var i = 0; i< model.headers.length; i++){
