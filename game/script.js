@@ -1,5 +1,5 @@
 var fishes = [];
-var numFishes = 10000;
+var numFishes = 10;
 var CANVAS_WIDTH = 600;
 var CANVAS_HEIGHT = 600;
 var latestGame = null; // copy of the meta-game data
