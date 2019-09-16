@@ -110,7 +110,7 @@ window.addEventListener('message', (event) => {
             var data = { type: "FROM_PAGE", text: "I'm the fishing game!" };
             window.postMessage(data, "*");
         }
-        console.log("Content script received message: " + event.data.text);
+        console.log("Fishing Game script received message: " + event.data.text);
     }
 });
 

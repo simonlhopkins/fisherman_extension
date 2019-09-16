@@ -26,20 +26,32 @@ window.addEventListener('message', (event) => {
     		// then update our fish caught count
     		fish_caught_since_update += event.data.number;
     		// console.log("Caught " + fish_caught_since_update + " fish since update");
+    		chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
     	}
     	if (event.data.text && (event.data.text === "I'm the fishing game!")) {
     		// then update our fish caught count
     		isFishingGame = true;
     		console.log("This is the fishing game!");
     	}
-        console.log("Content script received message: " + event.data.text);
+        console.log("Controller script received message: " + event.data.text);
     }
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-    if (request.message === "getGame"){
-    	chrome.runtime.sendMessage({message: "setGame", data: updateGameData(request.data.game)}, function(){});
+	// console.log(sender);
+    if (request.message === "updateGame"){
+    	// gets the latest version of game on this script, updates it, and sends it back!
+    	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: updateGameData(request.data.game)}, function(){});
     }
+    else if (request.message === "setGame"){
+    	// overwrite the game stored on this script
+    	latestGame = request.data.game;
+    }
+    else if (request.message === "getGame"){
+    	// tell them what your copy of the game is
+    	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: result}, function(){});
+    }
+    console.log("Controller recieved runtime message " + request);
 });
 
 function updateGameData(game) {
@@ -68,9 +80,20 @@ function onTabLoad() {
 			setInterval(
 				function(){
 					// populateModel();
-					$.when(populateModel()).done(replaceAllImages());
+					$.when(populateModel()).done(refreshGame());
 				}, 1000);
 		}}, 1000);
+}
+
+function ifHasGame() {
+	for (var i = 0; i < model.headers.length; i++) {
+		$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
+	}
+}
+
+function refreshGame() {
+	chrome.runtime.sendMessage({message: "getGame"}, function(){});
+	replaceAllImages();
 }
 
 function replaceAllImages(){
@@ -96,6 +119,10 @@ function replaceAllImages(){
 	// 		}
 	// 	}
 	// }
+
+	if (latestGame) {
+		ifHasGame();
+	}
 	
 	for(var i = 0; i < model.images.length; i++){
 		// if($(model.images[i]).id === "fishGif"){
