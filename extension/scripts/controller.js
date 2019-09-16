@@ -42,9 +42,9 @@ window.addEventListener('message', (event) => {
             var data = { type: "FROM_PAGE", message: "setGame", data: latestGame };
             event.source.postMessage(data, "*"); // should only send it to who asked
         }
-    	else {
-	        console.log("Controller script received message: " + event.data.message);
-	    }
+    	// else {
+	    //     console.log("Controller script received message: " + event.data.message);
+	    // }
     }
 });
 
@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
     	// tell them what your copy of the game is
     	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: result}, function(){});
     }
-    console.log("Controller recieved runtime message " + request);
+    // console.log("Controller recieved runtime message " + request);
 });
 
 function updateGameData(game) {
@@ -75,7 +75,7 @@ function updateGameData(game) {
 
 function askIfFishingGame() {
 	// ask the tab if it's the fishing game
-	console.log("Checked if fishing game");
+	// console.log("Checked if fishing game");
 	var data = { type: "FROM_PAGE", message: "Are you the fishing game?" };
     window.postMessage(data, "*");
 }

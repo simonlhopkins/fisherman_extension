@@ -89,6 +89,7 @@ function clickFunction()
             if (fishes[x].visible) {
                 fishes[x].visible = false;
                 notifyFishCaught();
+                requestNextLine(); // just for testing
             }
         }
     }
@@ -119,11 +120,24 @@ window.addEventListener('message', (event) => {
             // tell them what your copy of the game is
             var data = { type: "FROM_PAGE", message: "setGame", data: latestGame };
             event.source.postMessage(data, "*"); // should only send it to who asked
-        } else {
-            console.log("Fishing Game script received unknown message: " + event.data.message);
         }
+        else if (event.data.message === "nextFishermanLine") {
+            sayLine(event.data.data);
+        }
+        // else {
+        //     console.log("Fishing Game script received unknown message: " + event.data.message);
+        // }
     }
 });
+
+function requestNextLine() {
+    var data = { type: "FROM_PAGE", message: "requestNextFishermanLine" };
+    window.postMessage(data, "*");
+}
+
+function sayLine(lineData) {
+    console.log("Saying line \"" + lineData.line + "\"");
+}
 
 
 function pointInFish(point, fish)
