@@ -23,7 +23,7 @@ function renderMountains(ctx)
 function renderOcean(ctx)
 {
     ctx.fillStyle = "rgb(80, 80, 255)";
-    ctx.fillRect(0, 300, 600, 300);
+    ctx.fillRect(0, 0, 600, 600);
 }
 
 function renderSun(ctx)
@@ -50,9 +50,9 @@ function renderCanvas()
     
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    renderMountains(ctx);
+    //renderMountains(ctx);
     renderOcean(ctx);
-    renderSun(ctx);
+    //renderSun(ctx);
     
     for (var x = 0; x < numFishes; x++)
     {

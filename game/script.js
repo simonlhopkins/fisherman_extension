@@ -17,7 +17,7 @@ function generatePointInLake()
 {
     var point = {};
     point.x = Math.random() * CANVAS_WIDTH;
-    point.y = (Math.random() * 0.5 + 0.5) * CANVAS_HEIGHT;
+    point.y = (Math.random()) * CANVAS_HEIGHT;
     return point;
 }
 
