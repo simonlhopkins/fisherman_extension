@@ -85,16 +85,35 @@ function clickFunction()
     {
         if (pointInFish(point, fishes[x]))
         {
-            fishes[x].visible = false;
-            notifyFishCaught();
+            if (fishes[x].visible) {
+                fishes[x].visible = false;
+                notifyFishCaught();
+            }
         }
     }
 }
 
 function notifyFishCaught()
 {
-    console.log("FISH!!");
+    // console.log("FISH!!");
+    var data = { type: "FROM_PAGE", text: "Caught a fish!", number: 1 };
+    window.postMessage(data, "*");
 }
+
+window.addEventListener('message', (event) => {
+    // console.log(`Received message: ${event.data}`);
+    if (event.source != window)
+        return;
+
+    if (event.data.type && (event.data.type === "FROM_PAGE")) {
+        if (event.data.text && (event.data.text === "Are you the fishing game?")) {
+            var data = { type: "FROM_PAGE", text: "I'm the fishing game!" };
+            window.postMessage(data, "*");
+        }
+        console.log("Content script received message: " + event.data.text);
+    }
+});
+
 
 function pointInFish(point, fish)
 {

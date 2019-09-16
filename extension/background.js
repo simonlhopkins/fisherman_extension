@@ -1,6 +1,7 @@
 
 
 var game = new Object();
+game.fish_caught = 0;
 game.times = [];
 
 
