@@ -24,6 +24,7 @@ window.addEventListener('message', (event) => {
     		// then update our fish caught count
     		isFishingGame = true;
     		console.log("This is the fishing game!");
+    		initializeIfIsFishingGame();
     	}
     	else if (event.data.message === "setGame"){
             // overwrite the game stored on this script
@@ -39,6 +40,11 @@ window.addEventListener('message', (event) => {
 	    // }
     }
 });
+
+function initializeIfIsFishingGame() {
+	window.onblur = function() { console.log('blur'); }
+	window.onfocus = function() { console.log('focus'); }
+}
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	// console.log(sender);
