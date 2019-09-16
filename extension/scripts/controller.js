@@ -36,15 +36,17 @@ window.addEventListener('message', (event) => {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-    if (request.message === "requestGameData"){
-    	chrome.runtime.sendMessage({message: "setGameData", data: updateGameData(request.data.game)}, function(){});
+    if (request.message === "getGame"){
+    	chrome.runtime.sendMessage({message: "setGame", data: updateGameData(request.data.game)}, function(){});
     }
 });
 
 function updateGameData(game) {
 	game.fish_caught += fish_caught_since_update;
     fish_caught_since_update = 0;
-    return game
+
+
+    return game;
 }
 
 function askIfFishingGame() {
@@ -74,9 +76,7 @@ function replaceAllImages(){
 	console.log("Is fishing game? " + isFishingGame);
 	var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 
-	for(var i = 0; i< model.headers.length; i++){
-		$(model.headers[i]).text("f i s h e r m a n");
-	}
+	
 
 	// attempting to get background images and replace them
 	// var divs = document.getElementsByTagName("div");
