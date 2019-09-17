@@ -53,8 +53,15 @@ function timeSinceTime(time) {
 }
 
 function initializeIfIsFishingGame() {
-	window.onblur = onFishergameBlur;
+	// window.onblur = onFishergameBlur;
+	// window.onfocus = onFishergameFocus;
+	console.log("init is fishing game");
+	var d = new Date();
+	var n = d.getTime();
+	lastTimeFocused = n;
 	window.onfocus = onFishergameFocus;
+	window.onblur = onFishergameBlur;
+
 }
 
 function initializeIfNotFishingGame() {
@@ -63,34 +70,50 @@ function initializeIfNotFishingGame() {
 	window.onfocus = onTabFocus;
 }
 
+//function for focusing on the fisherman game tab
 function onFishergameFocus() {
-	console.log('focus');
+	console.log("fishy focus");
+	
+	
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeFocused = n;
 	focusedOnThisTab = true;
+
+
 	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
+//function that is called when you leave the fisherman game
 function onFishergameBlur() {
-	console.log('blur');
+	console.log('fishy blur');
+	//when you leave the tab, it should log how long you spent fishing:)
+	
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeBlurred = n;
 	focusedOnThisTab = false;
+
+	console.log("time spent on your last fishing session: ");
+	console.log(lastTimeBlurred);
+	console.log(lastTimeFocused);
+
+	console.log((lastTimeBlurred - lastTimeFocused)/1000);
+
 	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
 function onTabFocus() {
-	console.log('focus');
+	console.log('normie focus');
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeFocused = n;
 	focusedOnThisTab = true;
+	
 }
 
 function onTabBlur() {
-	console.log('blur');
+	console.log('normie blur');
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeBlurred = n;
@@ -123,11 +146,20 @@ function updateGameData(game) {
 
 	    game.lastTimeBlurred = lastTimeBlurred;
 	    game.lastTimeFocused = lastTimeFocused;
+	    
+	    //only set the time spent fishing when you leave the tab, thus focusedOnThisTab will be false
+	    if(!focusedOnThisTab){
+	    	console.log("setting delta to: " + (lastTimeBlurred - lastTimeFocused));
+	    	game.timeSpentFishing += (lastTimeBlurred - lastTimeFocused)/1000;
+	    	console.log("total time spent fishing: " + game.timeSpentFishing);
+	    }
+	    //time since time gets you the seconds between the arg and the current time in seconds
+	    
+	    
 
-	    console.log(timeSinceTime(game.lastTimeFocused) + " < focused . blurred > " + timeSinceTime(game.lastTimeBlurred));
 	}
     latestGame = game;
-    return game;
+    return latestGame;
 }
 
 function askIfFishingGame() {
@@ -215,6 +247,7 @@ function replaceAllImages(){
 		return
 	}
 	// console.log("Made it past the gauntlet");
+	//this is the time you've spent away from the game
 	var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
 
 	if (timeSincePlayed / 600 < Math.random()) {
@@ -233,26 +266,12 @@ function replaceAllImages(){
 			continue;
 		}
 
-		// if($(model.images[i]).id === "fishGif"){
-		// 	continue;
-		// }
-		// if (model.images[i].src) {
-		// 	model.images[i].src = fishSrc;
-		// }
-		// else
-
 		// the class in twitter seems to be the same, so we can use that to get background images
 		// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
 		// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
 		$(model.images[i]).removeAttr("ng-src");
 		$(model.images[i]).removeAttr("srcset");
 
-		// if ($(model.images[i]).attr("ng-src")) {
-		// 	// $(model.images[i]).attr("ng-src", fishSrc);
-		// }
-		// else if ($(model.images[i]).attr("srcset")) {
-		// 	// $(model.images[i]).attr("srcset", fishSrc);
-		// }
 
 		model.images[i].src = fishSrc;
 		// console.log("Replaced something");

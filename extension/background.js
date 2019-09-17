@@ -5,6 +5,7 @@ game.fish_caught = 0;
 game.times = [];
 game.lastTimeBlurred = 0;
 game.lastTimeFocused = 0;
+game.timeSpentFishing = 0;
 
 
 chrome.storage.sync.get(['game'], function(result) {
