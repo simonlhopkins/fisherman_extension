@@ -1,11 +1,12 @@
 
 
-var game = new Object();
-game.fish_caught = 0;
-game.times = [];
-game.lastTimeBlurred = 0;
-game.lastTimeFocused = 0;
-game.timeSpentFishing = 0;
+var emptyGame = new Object();
+emptyGame.fish_caught = 0;
+emptyGame.times = [];
+emptyGame.lastTimeBlurred = 0;
+emptyGame.lastTimeFocused = 0;
+emptyGame.timeSpentFishing = 0;
+emptyGame.lastSessionTime = 0;
 
 
 chrome.storage.sync.get(['game'], function(result) {
@@ -57,11 +58,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.message === "clearGame"){
     	console.log("clearGame");
 
-    	var _game = new Object();
-		_game.times = [];
+    	chrome.storage.sync.set({'game': emptyGame}, function(result) {
+			console.log(result);
+			chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: emptyGame}, function(){
 
-    	chrome.storage.sync.set({'game': _game}, function(result) {
-			console.log(request.data);
+    		});
 		});
     }
 

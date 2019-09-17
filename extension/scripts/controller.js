@@ -10,6 +10,14 @@ var focusedOnThisTab = true;
 $(document).ready(function(){
 	onTabLoad();
 	initializeIfNotFishingGame(); // just initialize and it'll get replaced by the fisherman one if it is fisherman
+
+	$(document).bind('keypress', function(e) {
+	    if(e.keyCode===61){
+	        console.log("plus pressed");
+
+	        chrome.runtime.sendMessage({message: "clearGame"}, function(){});
+	    }
+	});
 });
 
 window.addEventListener('message', (event) => {
@@ -151,6 +159,7 @@ function updateGameData(game) {
 	    if(!focusedOnThisTab){
 	    	console.log("setting delta to: " + (lastTimeBlurred - lastTimeFocused));
 	    	game.timeSpentFishing += (lastTimeBlurred - lastTimeFocused)/1000;
+	    	game.lastSessionTime = (lastTimeBlurred - lastTimeFocused)/1000;
 	    	console.log("total time spent fishing: " + game.timeSpentFishing);
 	    }
 	    //time since time gets you the seconds between the arg and the current time in seconds
@@ -189,35 +198,11 @@ function onTabLoad() {
 
 function refreshGame() {
 	chrome.runtime.sendMessage({message: "getGame"}, function(){});
-	replaceAllImages();
+	replaceContent();
 }
 
-function ifHasGame() {
-	var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
-
-	// if (timeSincePlayed / 600 < Math.random()) {
-	// 	// if it's less than 10 minutes then there's a chance it just discards this
-	// 	return;
-	// }
-
-	var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
-
-
-	// if it has a copy of the latestGame data then it knows it can run this!
-	for (var i = 0; i < model.headers.length; i++) {
-		if (chanceToReplace < Math.random()) {
-			continue;
-		}
-		var choice = Math.random();
-		if (choice < .5) {
-			$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
-		} else {
-			$(model.headers[i]).text("You should go fishing!");
-		}
-	}
-}
-
-function replaceAllImages(){
+//latest game is the crispiest version of the game
+function replaceContent(){
 	// console.log("Is fishing game? " + isFishingGame);
 	var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 
@@ -244,37 +229,84 @@ function replaceAllImages(){
 	console.log("HERE. Time since: " + timeSinceTime(latestGame.lastTimeBlurred) + " " + timeSinceTime(latestGame.lastTimeFocused));
 	if (latestGame.lastTimeFocused > latestGame.lastTimeBlurred) {
 		// then you're currently playing it so return
+		console.log("return");
 		return
 	}
 	// console.log("Made it past the gauntlet");
 	//this is the time you've spent away from the game
 	var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
 
-	if (timeSincePlayed / 600 < Math.random()) {
-		// if it's less than 10 minutes then there's a chance it just discards this
-		return;
-	}
+	// if (timeSincePlayed / 600 < Math.random()) {
+	// 	// if it's less than 10 minutes then there's a chance it just discards this
+	// 	console.log("return");
+	// 	return;
+	// }
+
 
 	var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
 
 	if (latestGame) {
-		ifHasGame();
-	}
-	
-	for(var i = 0; i < model.images.length; i++){
-		if (chanceToReplace < Math.random()) {
-			continue;
+		var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
+
+		// if (timeSincePlayed / 600 < Math.random()) {
+		// 	// if it's less than 10 minutes then there's a chance it just discards this
+		// 	return;
+		// }
+
+
+		//seconds you've spent away/ 1000 i.e. if you've spent 1 min away = 60/1000 = 6% chance to replace
+		var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
+		console.log(latestGame.timeSpentFishing);
+		if(latestGame.timeSpentFishing>0){
+			console.log("replacing headers...");
+			var lastTime = latestGame.lastTimeBlurred - latestGame.lastTimeFocused;
+			for (var i = 0; i < model.headers.length; i++) {
+				var chanceToReplace = Math.random();
+				if(chanceToReplace<1.0){
+					$(model.headers[i]).text("You've been fishing with me for "+ latestGame.timeSpentFishing +
+											" seconds, but last time you only spent " + latestGame.lastSessionTime + " seconds with me!!!! Good thing you've caught "+ latestGame.fish_caught + " fish!"+
+											"You have spent "+ timeSincePlayed + " away from me tho... come back >:(");
+				}
+			}
 		}
 
-		// the class in twitter seems to be the same, so we can use that to get background images
-		// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-		// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-		$(model.images[i]).removeAttr("ng-src");
-		$(model.images[i]).removeAttr("srcset");
+		//simon debugging >:~)
+		return;
 
 
-		model.images[i].src = fishSrc;
-		// console.log("Replaced something");
+
+		// if it has a copy of the latestGame data then it knows it can run this!
+		for (var i = 0; i < model.headers.length; i++) {
+			if (chanceToReplace < Math.random()) {
+				continue;
+			}
+			var choice = Math.random();
+			if (choice < .5) {
+				$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
+			} else {
+				$(model.headers[i]).text("You should go fishing!");
+			}
+		}
+
+		for(var i = 0; i < model.images.length; i++){
+			if (chanceToReplace < Math.random()) {
+				continue;
+			}
+
+			// the class in twitter seems to be the same, so we can use that to get background images
+			// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
+			// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
+			$(model.images[i]).removeAttr("ng-src");
+			$(model.images[i]).removeAttr("srcset");
+
+
+			model.images[i].src = fishSrc;
+			// console.log("Replaced something");
+		}
+
+		
 	}
+	
+	
 	// console.log("update");
 }
