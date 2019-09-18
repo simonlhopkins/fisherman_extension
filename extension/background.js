@@ -7,6 +7,7 @@ emptyGame.lastTimeBlurred = 0;
 emptyGame.lastTimeFocused = 0;
 emptyGame.timeSpentFishing = 0;
 emptyGame.lastSessionTime = 0;
+emptyGame.fishermanState = 0;
 
 
 chrome.storage.sync.get(['game'], function(result) {
