@@ -79,8 +79,8 @@ function clickFunction()
     var svgy = rect.y;
     
     var point = {};
-    point.x = Number(window.event.clientX - svgx);
-    point.y = Number(window.event.clientY - svgy);
+    point.x = Number(window.event.clientX - svgx) * (CANVAS_WIDTH / rect.width);
+    point.y = Number(window.event.clientY - svgy) * (CANVAS_HEIGHT / rect.height);
 
     var fishCaughtThisTime = 0;
     for (var x = 0; x < numFishes; x++)
