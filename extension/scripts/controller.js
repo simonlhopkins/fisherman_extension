@@ -257,21 +257,21 @@ function replaceContent(){
 		//seconds you've spent away/ 1000 i.e. if you've spent 1 min away = 60/1000 = 6% chance to replace
 		var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
 		console.log(latestGame.timeSpentFishing);
-		if(latestGame.timeSpentFishing>0){
-			console.log("replacing headers...");
-			var lastTime = latestGame.lastTimeBlurred - latestGame.lastTimeFocused;
-			for (var i = 0; i < model.headers.length; i++) {
-				var chanceToReplace = Math.random();
-				if(chanceToReplace<1.0){
-					$(model.headers[i]).text("You've been fishing with me for "+ latestGame.timeSpentFishing +
-											" seconds, but last time you only spent " + latestGame.lastSessionTime + " seconds with me!!!! Good thing you've caught "+ latestGame.fish_caught + " fish!"+
-											"You have spent "+ timeSincePlayed + " away from me tho... come back >:(");
-				}
-			}
-		}
-
-		//simon debugging >:~)
-		return;
+//		if(latestGame.timeSpentFishing>0){
+//			console.log("replacing headers...");
+//			var lastTime = latestGame.lastTimeBlurred - latestGame.lastTimeFocused;
+//			for (var i = 0; i < model.headers.length; i++) {
+//				var chanceToReplace = Math.random();
+//				if(chanceToReplace<1.0){
+//					$(model.headers[i]).text("You've been fishing with me for "+ latestGame.timeSpentFishing +
+//											" seconds, but last time you only spent " + latestGame.lastSessionTime + " seconds with me!!!! Good thing you've caught "+ latestGame.fish_caught + " fish!"+
+//											"You have spent "+ timeSincePlayed + " away from me tho... come back >:(");
+//				}
+//			}
+//		}
+//
+//		//simon debugging >:~)
+//		return;
 
 
 
