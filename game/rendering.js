@@ -1,5 +1,5 @@
-var FISH_WIDTH = 60;
-var FISH_HEIGHT = 30;
+var FISH_WIDTH = 120;
+var FISH_HEIGHT = 60;
 
 function renderMountains(ctx)
 {
@@ -23,7 +23,7 @@ function renderMountains(ctx)
 function renderOcean(ctx)
 {
     ctx.fillStyle = "rgb(80, 80, 255)";
-    ctx.fillRect(0, 0, 600, 600);
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 function renderSun(ctx)
@@ -43,15 +43,21 @@ function renderFish(ctx, fish)
     ctx.translate(-fish.currentPoint.x, -fish.currentPoint.y);
 }
 
+function renderBackground(ctx)
+{
+    ctx.drawImage(document.getElementById("backgroundImage"), 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+}
+
 function renderCanvas()
 {
     var canvas = document.getElementById("maincanvas");
     var ctx = canvas.getContext("2d");
     
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.clearRect(0, 0, 2 * CANVAS_WIDTH, 2 * CANVAS_HEIGHT);
 
     //renderMountains(ctx);
     renderOcean(ctx);
+    renderBackground(ctx);
     //renderSun(ctx);
     
     for (var x = 0; x < numFishes; x++)

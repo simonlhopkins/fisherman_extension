@@ -1,7 +1,7 @@
 var fishes = [];
 var numFishes = 10;
-var CANVAS_WIDTH = 600;
-var CANVAS_HEIGHT = 600;
+var CANVAS_WIDTH = 3200;
+var CANVAS_HEIGHT = 1800;
 var latestGame = null; // copy of the meta-game data
 
 
@@ -16,8 +16,8 @@ function main()
 function generatePointInLake()
 {
     var point = {};
-    point.x = Math.random() * CANVAS_WIDTH;
-    point.y = (Math.random()) * CANVAS_HEIGHT;
+    point.x = (Math.random() * 1800) + 1400;
+    point.y = (Math.random() * 500) + 1300;
     return point;
 }
 
