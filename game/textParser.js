@@ -5,7 +5,7 @@ var currentTextIndex = 0;
 
 function getTextToDisplay()
 {
-    return currentTextArray.slice(currentTextIndex, currentTextIndex + numLinesShown + 1);
+    return currentTextArray.slice(currentTextIndex, currentTextIndex + numLinesShown);
 }
 
 function incrementTextIndex()
