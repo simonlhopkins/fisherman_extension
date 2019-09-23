@@ -11,6 +11,7 @@ function main()
     
     document.getElementById("maincanvas").addEventListener("click", clickFunction);
     var t = setInterval(globalUpdate, 16);
+    fetchNewText();
 }
 
 function generatePointInLake()
