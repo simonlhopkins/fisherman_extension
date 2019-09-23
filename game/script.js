@@ -129,6 +129,7 @@ window.addEventListener('message', (event) => {
         }
         else if (event.data.message === "nextFishermanLine") {
             sayLine(event.data.data);
+            ingestText(event.data.data.line, 2, 5); //numbers need to be passed.
         }
         // else {
         //     console.log("Fishing Game script received unknown message: " + event.data.message);

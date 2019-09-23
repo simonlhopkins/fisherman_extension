@@ -52,7 +52,7 @@ function renderText(ctx, textArray)
 {
     var fontSize = 100;
     var padding = 50;
-    ctx.font = String(fontSize) + "px Wingdings";
+    ctx.font = String(fontSize) + "px Comic Sans MS";
     
     ctx.fillStyle = "rgb(255, 255, 255)";
     

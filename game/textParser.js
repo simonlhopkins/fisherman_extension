@@ -3,9 +3,6 @@ var maxLineSize = 10;
 var numLinesShown = 3;
 var currentTextIndex = 0;
 
-
-
-
 function getTextToDisplay()
 {
     return currentTextArray.slice(currentTextIndex, currentTextIndex + numLinesShown + 1);
@@ -20,21 +17,15 @@ function fetchNewText()
 {
     currentTextIndex = 0;
     currentTextArray = [];
-    
-    //get new text
-    var newText = "asfdlfarwj sadfaref awgafsgfdj ;asfgergfsfger asdfrg asdf we l;kjg sdf";
-    
-    ingestText(newText, 2, 5);
+    requestNextLine();
 }
-
 
 function ingestText(text, timeForEachLine, timeBeforeFetchingNextStory)
 {
     var splitList = text.split(" ");
-    //var newTextArray = [];
-    
     var textLine = "";
     var x = 0;
+    
     for (; x < splitList.length; x++)
     {
         if (textLine.length + splitList[x].length + 1 >= maxLineSize)
@@ -44,6 +35,7 @@ function ingestText(text, timeForEachLine, timeBeforeFetchingNextStory)
             {
                 currentTextArray.push(textLine);
             }
+            
             textLine = "";
         }
         
@@ -62,4 +54,3 @@ function ingestText(text, timeForEachLine, timeBeforeFetchingNextStory)
     
     setTimeout(fetchNewText, ((currentTextArray.length + 1) * timeForEachLine + timeBeforeFetchingNextStory) * 1000);
 }
-
