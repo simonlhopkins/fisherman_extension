@@ -1,19 +1,14 @@
-
-var objManipulatedHT = new Hashtable();
-
-
 var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
+
+
 function replaceImagesWithPoloroids(){
 
-	if(model.images.length>=2){
-
-		replaceImage(model.images[0], fishSrc);
-		replaceImage(model.images[1], fishSrc);
-		replaceImage(model.images[2], fishSrc);
-
-		// console.log(objManipulatedHT.retrieve(model.images[0]));
-		// console.log(objManipulatedHT.retrieve(model.images[1]));
-		// console.log(objManipulatedHT.retrieve(model.images[2]));
+	for(var i = 0; i< model.images.length; i++){
+		if($(model.images[i]).hasClass("alreadyModified")){
+			changeImageBackToOriginal(model.images[i]);
+			continue;
+		}
+		replaceImage(model.images[i], fishSrc);
 	}
 	
 
@@ -26,21 +21,83 @@ function replaceImage(element, newSrc){
 	// the class in twitter seems to be the same, so we can use that to get background images
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw	
-	if($(element).hasClass("alreadyModified")){
-		return;
-	}
+	
 	var originalSrc = $(element)[0].src;
-	console.log(originalSrc);
+
 	$(element).removeAttr("ng-src");
 	$(element).removeAttr("srcset");
 
 	element.src = newSrc;
 
+
 	$(element).addClass("alreadyModified");
-	$(element).append("<span class = 'originalSrc'>"+ originalSrc +"</span>")
+	$(element).append("<span class = 'originalSrc'>"+ originalSrc +"</span>");
+	var width = $(element).width();
+	var height = $(element).height();
+	$(element).width(Math.min(width, height));
+	$(element).height(Math.min(width, height));
+
+
+
 	// console.log("Replaced something");
 		
 	
+}
+
+function changeImageBackToOriginal(element){
+	var srcChild = $(element).find(".originalSrc");
+	var newImgChild = $(element).find(".newImg");
+	element.src = srcChild[0].innerHTML;
+	$(element).removeClass("alreadyModified");
+	$(element).remove(srcChild);
+
+	
+
+}
+
+
+function debugWindow(){
+	if(isFishingGame){
+		return;
+	}
+
+	if($("#debugWindow").length === 0){
+		$("body").append("<div id = 'debugWindow'</div>");
+	}
+	$("html").css({
+		"height": "100%",
+		"width": "100%"
+	});
+	$("#debugWindow").css({
+		"position": "fixed",
+		"width": "50%",
+		"height": "50%",
+		"background-color": "white",
+		"z-index": "100",
+		"top": "0px",
+		"right": "0px",
+		"padding": "10px",
+		"outline-style": "solid"
+
+	});
+
+
+	$("#debugWindow p").css("font-size", "12px");
+	if(showDebugWindow){
+		$("#debugWindow").css("visibility", "visible");
+	}else{
+		$("#debugWindow").css("visibility", "hidden");
+	}
+
+
+	$("#debugWindow").html(
+		"<p>fish caught: "+latestGame.fish_caught+"</p>"+
+		"<p>lastTimeBlurred: "+latestGame.lastTimeBlurred+"</p>"+
+		"<p>lastTimeFocused: "+latestGame.lastTimeFocused+"</p>"+
+		"<p>timeSpentFishing: "+latestGame.timeSpentFishing/1000+"</p>"+
+		"<p>lastSessionTime: "+latestGame.lastSessionTime/1000+"</p>"+
+		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"
+		);
 }
 
 
