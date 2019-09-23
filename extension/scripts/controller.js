@@ -114,11 +114,11 @@ function onFishergameFocus() {
 	//it should be like the last session time times a constant
 	//if you spend less than 5 seconds, it is negative, else, it is a positibe
 	if(latestGame.lastSessionTime/1000 > 5){
-		rawFishermanStateDelta += 10;
+		rawFishermanStateDelta += 15;
 		console.log("you spent more than 5 seconds with me last time:)");
 	}
 	else{
-		rawFishermanStateDelta -= 5;
+		rawFishermanStateDelta -= 10;
 		console.log("you spent less than 5 seconds with me :(");
 	}
 	
@@ -129,7 +129,7 @@ function onFishergameFocus() {
 	focusedOnThisTab = true;
 	
 
-	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+	//chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
 //function that is called when you leave the fisherman game
@@ -144,7 +144,7 @@ function onFishergameBlur() {
 	focusedOnThisTab = false;
 
 	timeSpentFishingDelta = lastTimeBlurred - lastTimeFocused;
-	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+	//chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
 
@@ -173,6 +173,7 @@ function updateGameData(game) {
 
 
 	if(focusedOnThisTab){
+		console.log("delta = "+ rawFishermanStateDelta);
 		game.rawFishermanState += rawFishermanStateDelta;
     	rawFishermanStateDelta = 0;
 	}

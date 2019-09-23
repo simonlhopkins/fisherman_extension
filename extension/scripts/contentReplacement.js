@@ -89,7 +89,6 @@ function debugWindow(){
 		$("#debugWindow").css("visibility", "hidden");
 	}
 
-
 	$("#debugWindow").html(
 		"<p>fish caught: "+latestGame.fish_caught+"</p>"+
 		"<p>lastTimeBlurred: "+latestGame.lastTimeBlurred+"</p>"+
