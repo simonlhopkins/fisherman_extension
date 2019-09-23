@@ -6,17 +6,15 @@ var lastTimeBlurred = null;
 var lastTimeFocused = null;
 var focusedOnThisTab = true;
 
-var fishermanStateDelta = 0;
-
+var rawFishermanStateDelta = 0;
+var timeSpentFishingDelta = 0;
 
 $(document).ready(function(){
+	//checks if it is the fisherman game, there is a proprietary span object that is "isFishingGame"
 	if($("#isFishingGame").length != 0){
 		isFishingGame = true;
 	}
 	onTabLoad();
-	initializeIfNotFishingGame(); // just initialize and it'll get replaced by the fisherman one if it is fisherman
-
-
 
 	$(document).bind('keypress', function(e) {
 	    if(e.keyCode===61){
@@ -64,12 +62,15 @@ window.addEventListener('message', (event) => {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	// console.log(sender);
     if (request.message === "updateGame"){
+
     	// gets the latest version of game on this script, updates it, and sends it back!
+    	console.log(request);
     	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: updateGameData(request.data.game)}, function(){});
     }
     else if (request.message === "setGame"){
     	// overwrite the game stored on this script
     	latestGame = request.data.game;
+    	console.log(request.data);
     }
     else if (request.message === "getGame"){
     	// tell them what your copy of the game is
@@ -92,6 +93,7 @@ function initializeIfIsFishingGame() {
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeFocused = n;
+	console.log("setting blur and focus")
 	window.onfocus = onFishergameFocus;
 	window.onblur = onFishergameBlur;
 
@@ -99,6 +101,7 @@ function initializeIfIsFishingGame() {
 
 function initializeIfNotFishingGame() {
 	// everything in this needs to be overwritten by the initializeIfIsFishingGame since we just run this no matter what
+	console.log("initializing not fisherman blur and focus");
 	window.onblur = onTabBlur;
 	window.onfocus = onTabFocus;
 }
@@ -107,9 +110,20 @@ function initializeIfNotFishingGame() {
 var gameStateTimeout= null;
 
 function onFishergameFocus() {
-
-	console.log("fishy focus");
+	//handle the return happyness
+	//it should be like the last session time times a constant
+	//if you spend less than 5 seconds, it is negative, else, it is a positibe
+	if(latestGame.lastSessionTime/1000 > 5){
+		rawFishermanStateDelta += 10;
+		console.log("you spent more than 5 seconds with me last time:)");
+	}
+	else{
+		rawFishermanStateDelta -= 5;
+		console.log("you spent less than 5 seconds with me :(");
+	}
 	
+	console.log("fishy focus");
+	console.log("fishing game is focussed");
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeFocused = n;
@@ -126,13 +140,11 @@ function onFishergameBlur() {
 	
 	var d = new Date();
 	var n = d.getTime();
+	console.log("setting last time blurred to +: " + n);
 	lastTimeBlurred = n;
 	focusedOnThisTab = false;
 
-	console.log("time spent on your last fishing session: ");
-	console.log(lastTimeBlurred);
-
-
+	timeSpentFishingDelta = lastTimeBlurred - lastTimeFocused;
 	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
@@ -159,8 +171,17 @@ function onTabBlur() {
 
 
 function updateGameData(game) {
-	game.fishermanState += fishermanStateDelta;
-    fishermanStateDelta = 0;
+
+
+	if(focusedOnThisTab){
+		game.rawFishermanState += rawFishermanStateDelta;
+		console.log(rawFishermanStateDelta);
+    	rawFishermanStateDelta = 0;
+	}
+	
+	game.modFishermanState = game.rawFishermanState;
+
+
 
 	if (isFishingGame) {
 		// only update this stuff if it's the fishing game
@@ -171,16 +192,14 @@ function updateGameData(game) {
 	    game.lastTimeBlurred = lastTimeBlurred;
 	    game.lastTimeFocused = lastTimeFocused;
 	    
-	    //only set the time spent fishing when you leave the tab, thus focusedOnThisTab will be false
-	    if(!focusedOnThisTab){
-	    	console.log("setting delta to: " + (lastTimeBlurred - lastTimeFocused));
-	    	game.timeSpentFishing += (lastTimeBlurred - lastTimeFocused)/1000;
-	    	game.lastSessionTime = (lastTimeBlurred - lastTimeFocused)/1000;
-	    	console.log("total time spent fishing: " + game.timeSpentFishing);
+	    //timeSpentFishingDelta is set to not zero when you leave the tab:)
+	    game.timeSpentFishing += timeSpentFishingDelta;
+	    game.lastSessionTime = (lastTimeBlurred - lastTimeFocused);
 
-	    }
+	    timeSpentFishingDelta = 0;
+	    //only set the time spent fishing when you leave the tab, thus focusedOnThisTab will be false
+	    
 	    //time since time gets you the seconds between the arg and the current time in seconds
-	    console.log("current fisherman state is" + game.fishermanState);
 	    
 
 	}
@@ -188,69 +207,61 @@ function updateGameData(game) {
     return latestGame;
 }
 
-function askIfFishingGame() {
-	// ask the tab if it's the fishing game
-	console.log("Checked if fishing game");
-	var data = { type: "FROM_PAGE", message: "Are you the fishing game?" };
-    window.postMessage(data, "*");
-}
 
 function onTabLoad() {
 	// console.log("Tab loaded fn");
+
+
 	console.log("isFishingGame? :" + isFishingGame);
+	//gets the game from background script once the tab loads
 	chrome.runtime.sendMessage({message: "getGame" }, function(){});
-	
-	// run some things once:
-	askIfFishingGame();
-
-	// after a second, every second populat the model and when that's finished run replaceImages.
-
-
-
-	gameStateTimeout = setInterval(function(){
-		//don't hardcode this
-		if (focusedOnThisTab) {
-			if(isFishingGame){
-				fishermanStateDelta += 5;
-			}
-			else{
-				fishermanStateDelta -= 5;
-			}
-			console.log(latestGame.fishermanState);
-		}
-	}, 1000);
-
-
-
+	var d = new Date();
+	var n = d.getTime();
 
 	if(isFishingGame){
-
 		
-		setInterval(
-			function(){
-				$.when(populateModel()).done(refreshTab());
-			}, 1000);
+		initializeIfIsFishingGame();
 	}else{
-		setInterval(
-
-			function(){
-				refreshGame();
-				
-		}, 1000);
+		initializeIfNotFishingGame();
 	}
+
+
+
+	//this is only for updating the content of the page, and connstantly refresshing the game every second
+	//if it is the fisherman game, then just refresh the game every frame, if it is another page, then don't repopulate model
+	setInterval(function(){
+		if(!isFishingGame){
+			$.when(populateModel()).done(refreshTab());
+		}else{
+			refreshGame();
+		}
+	},1000);
 }
 
 function refreshTab() {
-	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
-
+	//updates the game with current 
+	
+	
+	if(focusedOnThisTab){
+		rawFishermanStateDelta += modTabDelta();
+	}
+	//replaces content based on the updated model
 	replaceContent();
+	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
 function refreshGame(){
+
+	if(focusedOnThisTab){
+		rawFishermanStateDelta += modGameDelta();
+	}
 	chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
 }
 
-//latest game is the crispiest version of the game
+
+
+
+
 var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 function replaceContent(){
 	// console.log("Is fishing game? " + isFishingGame);
@@ -268,10 +279,8 @@ function replaceContent(){
 		}
 	});
 	
-	console.log("HERE. Time since: " + timeSinceTime(latestGame.lastTimeBlurred) + " " + timeSinceTime(latestGame.lastTimeFocused));
 	if (latestGame.lastTimeFocused > latestGame.lastTimeBlurred) {
 		// then you're currently playing it so return
-		console.log("return");
 		return
 	}
 	// console.log("Made it past the gauntlet");
@@ -288,34 +297,7 @@ function replaceContent(){
 	var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
 
 	if (latestGame) {
-		var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
-
-		// if (timeSincePlayed / 600 < Math.random()) {
-		// 	// if it's less than 10 minutes then there's a chance it just discards this
-		// 	return;
-		// }
-
-
-		//seconds you've spent away/ 1000 i.e. if you've spent 1 min away = 60/1000 = 6% chance to replace
-		var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
-		// if(latestGame.timeSpentFishing>0){
-		// 	console.log("replacing headers...");
-		// 	var lastTime = latestGame.lastTimeBlurred - latestGame.lastTimeFocused;
-		// 	for (var i = 0; i < model.headers.length; i++) {
-		// 		var chanceToReplace = Math.random();
-		// 		if(chanceToReplace<1.0){
-		// 			$(model.headers[i]).text("You've been fishing with me for "+ latestGame.timeSpentFishing +
-		// 									" seconds, but last time you only spent " + latestGame.lastSessionTime + " seconds with me!!!! Good thing you've caught "+ latestGame.fish_caught + " fish!"+
-		// 									"You have spent "+ timeSincePlayed + " away from me tho... come back >:(");
-		// 		}
-		// 	}
-		// }
-
-		// //simon debugging >:~)
-		// return;
-
-
-
+		
 		// if it has a copy of the latestGame data then it knows it can run this!
 		for (var i = 0; i < model.headers.length; i++) {
 			if (chanceToReplace < Math.random()) {
@@ -351,3 +333,32 @@ function replaceContent(){
 	
 	// console.log("update");
 }
+
+
+function modTabDelta(){
+	var currentAwayTime = (new Date().getTime() - latestGame.lastTimeBlurred)/1000;
+	//slope of (x)(x-360)
+	console.log("current time: " + new Date().getTime() );
+	console.log("lastTimeBlurred: "+ latestGame.lastTimeBlurred)
+	console.log("time spent away " + currentAwayTime);
+	var x = currentAwayTime;
+	//make sure slope won't get steeper past 180
+	x = Math.min(x, 180);
+	var slope = -(2*x);
+	slope/= 720;
+	console.log(currentAwayTime);
+	console.log("slope is :" + slope)
+	return slope;
+}
+function modGameDelta(){
+	//last time focussed
+	var currentFishingTime = (new Date().getTime() - latestGame.lastTimeFocused)/1000;
+	//slope of (x)(x-360)
+	var x = currentFishingTime;
+	var slope = 360-(2*x);
+	slope/= 720;
+	//make sure slope isn't negative
+	slope = Math.max(slope, 0);
+	return slope;
+}
+
