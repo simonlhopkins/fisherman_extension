@@ -4,12 +4,31 @@ var objManipulatedHT = new Hashtable();
 
 
 function replaceImagesWithPoloroids(){
+
+
 	objManipulatedHT.insert(model.images[0], "hopkins");
 	console.log(objManipulatedHT.retrieve("simon"));
 
 }
 
 
+
+function replaceImage(original, newSrc){
+
+
+	// the class in twitter seems to be the same, so we can use that to get background images
+	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
+	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
+	var temp = original;
+
+	$(original).removeAttr("ng-src");
+	$(original).removeAttr("srcset");
+
+	original.src = newSrc;
+	// console.log("Replaced something");
+
+	objManipulatedHT.insert(original, temp.src);
+}
 
 
 
