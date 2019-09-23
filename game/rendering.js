@@ -48,6 +48,20 @@ function renderBackground(ctx)
     ctx.drawImage(document.getElementById("backgroundImage"), 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
+function renderText(ctx, textArray)
+{
+    var fontSize = 100;
+    var padding = 50;
+    ctx.font = String(fontSize) + "px Comic Sans MS";
+    
+    ctx.fillStyle = "rgb(255, 255, 255)";
+    
+    for (var x = 0; x < textArray.length; x++)
+    {
+        ctx.fillText(textArray[x], padding, (fontSize + padding) * (1 + x));
+    }
+}
+
 function renderCanvas()
 {
     var canvas = document.getElementById("maincanvas");
@@ -58,6 +72,7 @@ function renderCanvas()
     //renderMountains(ctx);
     renderOcean(ctx);
     renderBackground(ctx);
+    renderText(ctx, getTextToDisplay());
     //renderSun(ctx);
     
     for (var x = 0; x < numFishes; x++)
