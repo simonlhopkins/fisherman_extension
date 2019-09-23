@@ -4,7 +4,7 @@ var objManipulatedHT = new Hashtable();
 
 
 function replaceImagesWithPoloroids(){
-	objManipulatedHT.insert("simon", "hopkins");
+	objManipulatedHT.insert(model.images[0], "hopkins");
 	console.log(objManipulatedHT.retrieve("simon"));
 
 }
