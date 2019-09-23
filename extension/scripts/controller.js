@@ -18,7 +18,7 @@ $(document).ready(function(){
 
 	$(document).bind('keypress', function(e) {
 	    if(e.keyCode===61){
-	        console.log("plus pressed");
+	        console.log("reset pressed");
 
 	        chrome.runtime.sendMessage({message: "clearGame"}, function(){});
 	    }
@@ -37,12 +37,6 @@ window.addEventListener('message', (event) => {
     		// console.log("Fish caught: " + fish_caught_since_update + " this time: " + event.data.number)
     		// console.log("Caught " + fish_caught_since_update + " fish since update");
     		chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
-    	}
-    	else if (event.data.message && (event.data.message === "I'm the fishing game!")) {
-    		// then update our fish caught count
-    		isFishingGame = true;
-    		console.log("This is the fishing game!");
-    		initializeIfIsFishingGame();
     	}
     	else if (event.data.message === "setGame"){
             // overwrite the game stored on this script
@@ -64,13 +58,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.message === "updateGame"){
 
     	// gets the latest version of game on this script, updates it, and sends it back!
-    	console.log(request);
     	chrome.runtime.sendMessage(sender.id, {message: "setGame", data: updateGameData(request.data.game)}, function(){});
     }
     else if (request.message === "setGame"){
     	// overwrite the game stored on this script
     	latestGame = request.data.game;
-    	console.log(request.data);
     }
     else if (request.message === "getGame"){
     	// tell them what your copy of the game is
@@ -122,8 +114,7 @@ function onFishergameFocus() {
 		console.log("you spent less than 5 seconds with me :(");
 	}
 	
-	console.log("fishy focus");
-	console.log("fishing game is focussed");
+
 	var d = new Date();
 	var n = d.getTime();
 	lastTimeFocused = n;
@@ -175,7 +166,6 @@ function updateGameData(game) {
 
 	if(focusedOnThisTab){
 		game.rawFishermanState += rawFishermanStateDelta;
-		console.log(rawFishermanStateDelta);
     	rawFishermanStateDelta = 0;
 	}
 	
@@ -264,69 +254,11 @@ function refreshGame(){
 
 var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 function replaceContent(){
-	// console.log("Is fishing game? " + isFishingGame);
 	
-
-	if (!focusedOnThisTab) {
-		return; // only change things if you're looking at the tab? We may or may not want this idk.
-	}
-
-	// attempting to get background images and replace them
-	$("div").each(function(){
-		if ($(this).attr("style")) {
-			$(this).removeAttr("style");
-			var newStyle = $(this).attr("style", "background-image: url("+ fishSrc+")");
-		}
-	});
-	
-	if (latestGame.lastTimeFocused > latestGame.lastTimeBlurred) {
-		// then you're currently playing it so return
-		return
-	}
-	// console.log("Made it past the gauntlet");
-	//this is the time you've spent away from the game
-	var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
-
-	// if (timeSincePlayed / 600 < Math.random()) {
-	// 	// if it's less than 10 minutes then there's a chance it just discards this
-	// 	console.log("return");
-	// 	return;
-	// }
-
-
-	var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
 
 	if (latestGame) {
 		
-		// if it has a copy of the latestGame data then it knows it can run this!
-		for (var i = 0; i < model.headers.length; i++) {
-			if (chanceToReplace < Math.random()) {
-				continue;
-			}
-			var choice = Math.random();
-			if (choice < .5) {
-				$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
-			} else {
-				$(model.headers[i]).text("You should go fishing!");
-			}
-		}
-
-		for(var i = 0; i < model.images.length; i++){
-			if (chanceToReplace < Math.random()) {
-				continue;
-			}
-
-			// the class in twitter seems to be the same, so we can use that to get background images
-			// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-			// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-			$(model.images[i]).removeAttr("ng-src");
-			$(model.images[i]).removeAttr("srcset");
-
-
-			model.images[i].src = fishSrc;
-			// console.log("Replaced something");
-		}
-
+		replaceImagesWithPoloroids();
 		
 	}
 	
@@ -338,16 +270,11 @@ function replaceContent(){
 function modTabDelta(){
 	var currentAwayTime = (new Date().getTime() - latestGame.lastTimeBlurred)/1000;
 	//slope of (x)(x-360)
-	console.log("current time: " + new Date().getTime() );
-	console.log("lastTimeBlurred: "+ latestGame.lastTimeBlurred)
-	console.log("time spent away " + currentAwayTime);
 	var x = currentAwayTime;
 	//make sure slope won't get steeper past 180
 	x = Math.min(x, 180);
 	var slope = -(2*x);
 	slope/= 720;
-	console.log(currentAwayTime);
-	console.log("slope is :" + slope)
 	return slope;
 }
 function modGameDelta(){
