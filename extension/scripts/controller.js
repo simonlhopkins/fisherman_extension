@@ -9,6 +9,8 @@ var focusedOnThisTab = true;
 var rawFishermanStateDelta = 0;
 var timeSpentFishingDelta = 0;
 
+var showDebugWindow= false;
+
 $(document).ready(function(){
 	//checks if it is the fisherman game, there is a proprietary span object that is "isFishingGame"
 	if($("#isFishingGame").length != 0){
@@ -17,11 +19,17 @@ $(document).ready(function(){
 	onTabLoad();
 
 	$(document).bind('keypress', function(e) {
+		console.log(e.keyCode);
 	    if(e.keyCode===61){
 	        console.log("reset pressed");
 
 	        chrome.runtime.sendMessage({message: "clearGame"}, function(){});
 	    }
+	    if(e.keyCode===100){
+	    	showDebugWindow = !showDebugWindow;
+	        console.log("show debug window is now: " + showDebugWindow);
+	    }
+
 	});
 });
 
@@ -194,6 +202,7 @@ function updateGameData(game) {
 
 	}
     latestGame = game;
+    debugWindow();
     return latestGame;
 }
 
