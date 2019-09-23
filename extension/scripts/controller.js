@@ -252,7 +252,7 @@ function refreshGame(){
 
 
 
-var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
+
 function replaceContent(){
 	if(isFishingGame){
 		return;

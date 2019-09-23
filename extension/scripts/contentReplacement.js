@@ -2,32 +2,45 @@
 var objManipulatedHT = new Hashtable();
 
 
-
+var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 function replaceImagesWithPoloroids(){
 
+	if(model.images.length>=2){
 
-	objManipulatedHT.insert(model.images[0], "hopkins");
-	console.log(objManipulatedHT.retrieve("simon"));
+		replaceImage(model.images[0], fishSrc);
+		replaceImage(model.images[1], fishSrc);
+		replaceImage(model.images[2], fishSrc);
+
+		// console.log(objManipulatedHT.retrieve(model.images[0]));
+		// console.log(objManipulatedHT.retrieve(model.images[1]));
+		// console.log(objManipulatedHT.retrieve(model.images[2]));
+	}
+	
 
 }
 
 
 
-function replaceImage(original, newSrc){
-
+function replaceImage(element, newSrc){
 
 	// the class in twitter seems to be the same, so we can use that to get background images
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-	var temp = original;
+	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw	
+	if($(element).hasClass("alreadyModified")){
+		return;
+	}
+	var originalSrc = $(element)[0].src;
+	console.log(originalSrc);
+	$(element).removeAttr("ng-src");
+	$(element).removeAttr("srcset");
 
-	$(original).removeAttr("ng-src");
-	$(original).removeAttr("srcset");
+	element.src = newSrc;
 
-	original.src = newSrc;
+	$(element).addClass("alreadyModified");
+	$(element).append("<span class = 'originalSrc'>"+ originalSrc +"</span>")
 	// console.log("Replaced something");
-
-	objManipulatedHT.insert(original, temp.src);
+		
+	
 }
 
 
