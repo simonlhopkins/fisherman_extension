@@ -170,14 +170,14 @@ function onTabBlur() {
 
 
 function updateGameData(game) {
-
-
 	if(focusedOnThisTab){
 		console.log("delta = "+ rawFishermanStateDelta);
 		game.rawFishermanState += rawFishermanStateDelta;
     	rawFishermanStateDelta = 0;
 	}
 	
+	game.rawFishermanState = Math.clamp(game.rawFishermanState, -45, 45);
+
 	game.modFishermanState = game.rawFishermanState;
 
 
@@ -281,10 +281,11 @@ function modTabDelta(){
 	//slope of (x)(x-360)
 	var x = currentAwayTime;
 	//make sure slope won't get steeper past 180
-	if(latestGame.lastSessionTime<30)
+	if(currentAwayTime >180){
+		return 0;
+	}
 	x = Math.min(x, 180);
-	var slope = -(2*x);
-	slope/= 720;
+	var slope = -x/360;
 	return slope;
 }
 function modGameDelta(){
@@ -293,8 +294,9 @@ function modGameDelta(){
 	//slope of (x)(x-360)
 
 	var x = currentFishingTime;
-	var slope = 360-(2*x);
-	slope/= 720;
+	// var slope = 360-(2*x);
+	var slope = 0.5 - (x/360);
+	// slope/= 720;
 	//make sure slope isn't negative
 	slope = Math.max(slope, 0);
 	return slope;
