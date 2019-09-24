@@ -20,7 +20,7 @@ function getStage(_rawFishermanState){
 	}
 	return i;
 }
-
+//called every loop
 function replaceImagesWithPoloroids(){
 
 	var imagesToChooseFrom = latestGame.replacementContent.images[getStage(latestGame.rawFishermanState)];
@@ -55,21 +55,25 @@ function resetHeaders(){
 	});
 }
 
+//called every loop
+var lastStage = 0;
 function replaceHeaders(){
-
 	var headersToChooseFrom = latestGame.replacementContent.headers[getStage(latestGame.rawFishermanState)];
 	if(headersToChooseFrom.length===0){
+		console.log("NO HEADERS TO CHOOSE FROM");
 		resetHeaders();
 		return;
 	}
 	//reset on change
+	console.log(getStage(latestGame.rawFishermanState) + "=?=" + lastStage);
 	if(getStage(latestGame.rawFishermanState)!= lastStage){
+		console.log("CHANGE IN STAGE");
 		resetHeaders();
 	}
 	model.headers.forEach(function(_header){
-		replaceHeader(_header, headersToChooseFrom[0]);
+		replaceHeader(_header, swapOutStats(headersToChooseFrom[0]));
 	});
-	var lastStage = getStage(latestGame.rawFishermanState);
+	lastStage = getStage(latestGame.rawFishermanState);
 }
 
 
@@ -79,6 +83,9 @@ function replaceImage(element, newSrc){
 	// the class in twitter seems to be the same, so we can use that to get background images
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw	
+	if(model.modifiedContent.images.has(element)){
+		return;
+	}
 	model.modifiedContent.images.add(element);
 	var originalSrc = $(element)[0].src;
 
@@ -98,15 +105,26 @@ function replaceImage(element, newSrc){
 	// console.log("Replaced something");
 }
 
+//helper function for replaceHeaders
 function replaceHeader(element, newText){
-	model.modifiedContent.images.add(element);
+	$(element).text(newText);
+
+	if(model.modifiedContent.headers.has(element)){
+		return;
+	}
+
+	//all this shit is for keeping track of the old value, and we only need to do that one time
+	//when we add it to the list
+	model.modifiedContent.headers.add(element);
+
+	
 	var originalSrc = $(element).text();
 
-	$(element).text(newText);
+	
 
 
 	$(element).addClass("alreadyModified");
-	$(element).append("<span class = 'originalSrc'>"+ originalSrc +"</span>");
+	$(element).after("<span class = 'originalSrc'>"+ originalSrc +"</span>");
 	
 }
 
@@ -123,14 +141,19 @@ function changeImageBackToOriginal(element){
 function changeHeaderBackToOriginal(element){
 
 	model.modifiedContent.headers.delete(element);
-	var srcChild = $(element).find(".originalSrc");
-	$(element).text(srcChild[0].innerHTML);
-	$(element).removeClass("alreadyModified");
-	$(element).remove(srcChild);
+	var srcChild = $(element).siblings(".originalSrc");
+	
+	if(srcChild.length!=0){
+		$(element).text(srcChild[0].innerHTML);
+		$(element).removeClass("alreadyModified");
+		srcChild.remove();
+	}
+	
+
 
 }
 
-
+//this is gross
 function debugWindow(){
 
 	if($("#debugWindow").length === 0){
@@ -173,69 +196,30 @@ function debugWindow(){
 }
 
 
+function swapOutStats(_header){
+	var textArray = _header.split("");
+    var wordsToReplace = [];
+    var currentWordToReplace = "";
+    var foundWord = false;
+    for(var i = 0; i< textArray.length; i++){
+        if(textArray[i] === ">"){
+            foundWord= false;
+            wordsToReplace.push(currentWordToReplace);
+            currentWordToReplace = "";
+        }
+        if(foundWord){
+            currentWordToReplace += (textArray[i]);
+        }
+        if(textArray[i] === "<"){
+            foundWord= true;
+        }
+        
+    }
 
+    for(var i = 0; i< wordsToReplace.length; i++){
+        _header = _header.replace(wordsToReplace[i], latestGame[wordsToReplace[i]]);
+    }
+    _header = _header.replace("<", "").replace(">", "");
 
-// console.log("Is fishing game? " + isFishingGame);
-	
-
-// if (!focusedOnThisTab) {
-// 	return; // only change things if you're looking at the tab? We may or may not want this idk.
-// }
-
-// // attempting to get background images and replace them
-// $("div").each(function(){
-// 	if ($(this).attr("style")) {
-// 		$(this).removeAttr("style");
-// 		var newStyle = $(this).attr("style", "background-image: url("+ fishSrc+")");
-// 	}
-// });
-
-// if (latestGame.lastTimeFocused > latestGame.lastTimeBlurred) {
-// 	// then you're currently playing it so return
-// 	return
-// }
-// // console.log("Made it past the gauntlet");
-// //this is the time you've spent away from the game
-// var timeSincePlayed = timeSinceTime(latestGame.lastTimeBlurred);
-
-// // if (timeSincePlayed / 600 < Math.random()) {
-// // 	// if it's less than 10 minutes then there's a chance it just discards this
-// // 	console.log("return");
-// // 	return;
-// // }
-
-
-// var chanceToReplace = timeSincePlayed / 1000; // if chance is less than this then replace it
-
-
-
-//stuff from old replace content
-
-// if it has a copy of the latestGame data then it knows it can run this!
-// for (var i = 0; i < model.headers.length; i++) {
-// 	if (chanceToReplace < Math.random()) {
-// 		continue;
-// 	}
-// 	var choice = Math.random();
-// 	if (choice < .5) {
-// 		$(model.headers[i]).text("You caught " + latestGame.fish_caught + " fish!");
-// 	} else {
-// 		$(model.headers[i]).text("You should go fishing!");
-// 	}
-// }
-
-// for(var i = 0; i < model.images.length; i++){
-// 	if (chanceToReplace < Math.random()) {
-// 		continue;
-// 	}
-
-// 	// the class in twitter seems to be the same, so we can use that to get background images
-// 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-// 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
-// 	$(model.images[i]).removeAttr("ng-src");
-// 	$(model.images[i]).removeAttr("srcset");
-
-
-// 	model.images[i].src = fishSrc;
-// 	// console.log("Replaced something");
-// }
+    return _header;
+}

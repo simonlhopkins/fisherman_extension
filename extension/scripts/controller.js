@@ -185,6 +185,7 @@ function updateGameData(game) {
 	if (isFishingGame) {
 		// only update this stuff if it's the fishing game
 		game.fish_caught += fish_caught_since_update;
+		console.log("fish caught since update: " + fish_caught_since_update);
 	    fish_caught_since_update = 0;
 
 	    

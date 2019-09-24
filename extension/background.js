@@ -18,13 +18,25 @@ emptyGame.replacementContent.headers = [[], [], [], [], []]
 // I will have to manually set all of the images here
 
 function loadOurContent(){
-    addImage("/images/temp1.jpg", [0, 1]);
-    addHeader("come fish with me", [0, 1]);
+    //images
+    addImage("/images/FishermanandSon_polaroid.png", [0, 1]);
+    addImage("/images/FishMan_polaroid.png", [3, 4]);
+    addImage("/images/OldManBigFish_polaroid.png", [1, 2, 3]);
+
+    //headers
+    addHeader("fish w me bitch im mad u have spent like <timeSpentFishing> with me:(", [0]);
+    addHeader("fish w me plz", [4]);
+    addHeader("thank you for everything you've done:)", [4]);
+    addHeader("I'm getting a lil lonley", [3]);
+    addHeader("I've only caught <fish_caught> fish with you and you've spent <timeSpentFishing> with me:(", [0, 1, 2]);
+
 }
+
 
 
 function addImage(src, levels){
     var imgSrc = chrome.runtime.getURL(src);
+    
     for(var i = 0; i<levels.length; i++){
         if(levels[i]>=emptyGame.replacementContent.images.length){
             console.log("invalid level");
@@ -36,11 +48,14 @@ function addImage(src, levels){
 
 function addHeader(text, levels){
     
+
+
     for(var i = 0; i<levels.length; i++){
-        if(levels[i]>=emptyGame.replacementContent.images.length){
+        if(levels[i]>=emptyGame.replacementContent.headers.length){
             console.log("invalid level");
             continue;
         }
+
         emptyGame.replacementContent.headers[levels[i]].push(text);
     }
 }
