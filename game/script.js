@@ -1,16 +1,17 @@
 var fishes = [];
 var numFishes = 10;
 var latestGame = null; // copy of the meta-game data
+var canvas = document.getElementById("maincanvas");
+
 
 
 function main()
 {
     generateFishes();
     
-    document.getElementById("maincanvas").addEventListener("click", clickFunction);
-    var t = setInterval(globalUpdate, 16);
-    var a = setInterval(animateBoatState, 1000);
-    var b = setInterval(animateOceanState, 1000);
+    canvas.addEventListener("mousedown", clickFunction);
+    setInterval(globalUpdate, 16);
+    setInterval(function() {animateBoatState(); animateOceanState()}, 500);
     fetchNewText();
 }
 
@@ -64,14 +65,10 @@ function updateFish(fish)
     fish.currentPoint.y = ((1.0 - fish.currentInterpolation) * fish.startPoint.y +
                             fish.currentInterpolation * fish.endPoint.y);
     
-    
-    
     if (fishCounter >= fishFramesBetween)
     {
         fish.gifState = (fish.gifState + 1) % 3;
     }
-    
-    
 }
 
 function globalUpdate()
@@ -86,15 +83,12 @@ function globalUpdate()
         fishCounter = 0;
     }
     
-    //if (fishCounter % 2 == 0)
-    //{
-        renderCanvas();
-    //}
+    renderCanvas();
 }
 
 function clickFunction()
 {
-    var rect = document.getElementById("maincanvas").getBoundingClientRect();
+    var rect = canvas.getBoundingClientRect();
     var svgx = rect.x;
     var svgy = rect.y;
     
@@ -105,17 +99,14 @@ function clickFunction()
     var fishCaughtThisTime = 0;
     for (var x = 0; x < numFishes; x++)
     {
-        if (pointInFish(point, fishes[x]))
+        if (fishes[x].visible && pointInFish(point, fishes[x]))
         {
-            if (fishes[x].visible) {
-                fishes[x].visible = false;
-                fishCaughtThisTime++;
-            }
+            fishes[x].visible = false;
+            fishCaughtThisTime++;
         }
     }
     if (fishCaughtThisTime > 0) {
         notifyFishCaught(fishCaughtThisTime);
-        //requestNextLine(); // just for testing
     }
 }
 
@@ -147,7 +138,7 @@ window.addEventListener('message', (event) => {
             event.source.postMessage(data, "*"); // should only send it to who asked
         }
         else if (event.data.message === "nextFishermanLine") {
-            sayLine(event.data.data);
+            //sayLine(event.data.data);
             var text = event.data.data.line;
             var t1 = event.data.data.timeToNextStory;
             var t2 = event.data.data.timeForEachLine;
@@ -171,12 +162,9 @@ function sayLine(lineData) {
 
 function pointInFish(point, fish)
 {
-    var fishX = Number(fish.currentPoint.x);// - (FISH_WIDTH / 2);
-    var fishY = Number(fish.currentPoint.y);// - (FISH_HEIGHT / 2);
+    var fishX = Number(fish.currentPoint.x);
+    var fishY = Number(fish.currentPoint.y);
     var fishW = fishX + FISH_WIDTH;
     var fishH = fishY + FISH_HEIGHT;
-    return ((fishX < point.x) &&
-            (point.x < fishW) &&
-            (fishY < point.y) &&
-            (point.y < fishH));
+    return ((fishX < point.x) && (point.x < fishW) && (fishY < point.y) && (point.y < fishH));
 }
