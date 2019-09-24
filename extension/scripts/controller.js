@@ -23,7 +23,7 @@ $(document).ready(function(){
 	    if(e.keyCode===61){
 	        console.log("reset pressed");
 
-	        chrome.runtime.sendMessage({message: "clearGame"}, function(){});
+	        sendClearGame();
 	    }
 	    if(e.keyCode===100){
 	    	showDebugWindow = !showDebugWindow;
@@ -83,6 +83,18 @@ function timeSinceTime(time) {
 	// get how long it's been in seconds
 	var d = new Date();
 	return (d - time)/1000;
+}
+
+function resetHappiness() {
+	rawFishermanStateDelta = -latestGame.rawFishermanState;
+}
+
+function increaseHappinessStage() {
+	rawFishermanStateDelta = 20; // should be enough to get it up a stage
+}
+
+function decreaseHappinessStage() {
+	rawFishermanStateDelta = -20; // should be enough to get it down a stage
 }
 
 function initializeIfIsFishingGame() {
