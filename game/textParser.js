@@ -1,5 +1,5 @@
 var currentTextArray = [];
-var maxLineSize = 10;
+var maxLineSize = 60;
 var numLinesShown = 3;
 var currentTextIndex = 0;
 
