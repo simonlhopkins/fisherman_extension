@@ -25,11 +25,11 @@ function loadOurContent(){
     addImage("/images/OldManBigFish_polaroid.png", [1, 2, 3]);
 
     //headers
-    addHeader("fish w me bitch im mad u have spent like <timeSpentFishing> with me:(", [0]);
+    addHeader("fish w me bitch im mad u have spent like {timeSpentFishing} with me:(", [0]);
     addHeader("fish w me plz", [4]);
     addHeader("thank you for everything you've done:)", [4]);
     addHeader("I'm getting a lil lonley", [3]);
-    addHeader("I've only caught <fish_caught> fish with you and you've spent <timeSpentFishing> with me:(", [0, 1, 2]);
+    addHeader("I've only caught {fish_caught} fish with you and you've spent {timeSpentFishing} with me:(", [0, 1, 2]);
 
 
     //popups

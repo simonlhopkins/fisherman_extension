@@ -105,50 +105,59 @@ function replaceHeaders(){
 	}
 	//need to add randomness here
 	model.headers.forEach(function(_header){
-		replaceHeader(_header, swapOutStats(getRandomElement(headersToChooseFrom)));
+		if(model.modifiedContent.headers.has(_header)){
+			replaceHeader(_header, $(_header).siblings(".originalReplacement")[0].innerHTML);
+		}
+		else{
+
+			replaceHeader(_header, getRandomElement(headersToChooseFrom));
+		}
+		
 	});
 }
 
 function resetHeaders(){
 	model.modifiedContent.headers.forEach(function(_header){
-		if($(_header).hasClass("alreadyModified")){
-			changeHeaderBackToOriginal(_header);
-		}
+		
+		changeHeaderBackToOriginal(_header);
+		
 	});
 }
 
 //helper function for replaceHeaders
 function replaceHeader(element, newText){
-	$(element).text(newText);
+	
+	var origText = $(element).text();
+	$(element).text(swapOutStats(newText));
+
 
 	if(model.modifiedContent.headers.has(element)){
 		return;
 	}
 
-	//all this shit is for keeping track of the old value, and we only need to do that one time
-	//when we add it to the list
 	model.modifiedContent.headers.add(element);
-
-	
-	var originalSrc = $(element).text();
-
 	
 
 
 	$(element).addClass("alreadyModified");
-	$(element).after("<span class = 'originalSrc'>"+ originalSrc +"</span>");
-	
+	$(element).after("<span class = 'originalSrc'>"+ origText +"</span>");
+	$(element).after("<span class = 'originalReplacement'>"+ newText +"</span>");
+	console.log(newText);
 }
 
 function changeHeaderBackToOriginal(element){
 
 	model.modifiedContent.headers.delete(element);
 	var srcChild = $(element).siblings(".originalSrc");
-	
+	var originalReplacement = $(element).siblings(".originalReplacement");
 	if(srcChild.length!=0){
 		$(element).text(srcChild[0].innerHTML);
 		$(element).removeClass("alreadyModified");
 		srcChild.remove();
+		
+	}
+	if(originalReplacement.length!=0){
+		originalReplacement.remove();
 	}
 
 }
@@ -161,15 +170,12 @@ function replaceHyperlinks(){
 	var hyperlinksImgsToChooseFrom = latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)];
 	
 	if(hyperlinksImgsToChooseFrom.length===0){
-		console.log("NO HEADERS TO CHOOSE FROM");
 		resetHyperlinks();
 		return;
 	}
 
-	console.log("inside hl:");
-	console.log(getStage(latestGame.rawFishermanState) + "==" + stageAfterReplace);
+	
 	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
-		console.log("CHANGE IN STATE HYPERLINKS")
 		resetHyperlinks();
 	}
 
@@ -311,7 +317,7 @@ function swapOutStats(_header){
     var currentWordToReplace = "";
     var foundWord = false;
     for(var i = 0; i< textArray.length; i++){
-        if(textArray[i] === ">"){
+        if(textArray[i] === "}"){
             foundWord= false;
             wordsToReplace.push(currentWordToReplace);
             currentWordToReplace = "";
@@ -319,7 +325,7 @@ function swapOutStats(_header){
         if(foundWord){
             currentWordToReplace += (textArray[i]);
         }
-        if(textArray[i] === "<"){
+        if(textArray[i] === "{"){
             foundWord= true;
         }
         
@@ -328,7 +334,7 @@ function swapOutStats(_header){
     for(var i = 0; i< wordsToReplace.length; i++){
         _header = _header.replace(wordsToReplace[i], latestGame[wordsToReplace[i]]);
     }
-    _header = _header.replace("<", "").replace(">", "");
+    _header = _header.replace("{", "").replace("}", "");
 
     return _header;
 }
