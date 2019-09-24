@@ -1,6 +1,10 @@
 
 var fishermanStageCutoffs = [-30, -10, 10, 30];
 
+
+function getRandomElement(_list){
+	return _list[Math.floor(Math.random()*_list.length)];
+}
 function getStage(_rawFishermanState){
 
 	for(var i = 0; i< fishermanStageCutoffs.length; i++){
@@ -25,14 +29,13 @@ function replaceImagesWithPoloroids(){
 		return;
 	}
 	//reset on change
-	if(getStage(latestGame.rawFishermanState)!= lastStage){
+	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
 		resetImages();
 	}
 	//need to add randomness here
 	model.images.forEach(function(_image){
-		replaceImage(_image, imagesToChooseFrom[0]);
+		replaceImage(_image, getRandomElement(imagesToChooseFrom));
 	});
-	var lastStage = getStage(latestGame.rawFishermanState);
 	
 }
 
@@ -85,7 +88,6 @@ function replaceImage(element, newSrc){
 }
 
 //called every loop
-var lastStage = 0;
 
 
 function replaceHeaders(){
@@ -96,16 +98,15 @@ function replaceHeaders(){
 		return;
 	}
 	//reset on change
-	console.log(getStage(latestGame.rawFishermanState) + "=?=" + lastStage);
-	if(getStage(latestGame.rawFishermanState)!= lastStage){
+	console.log(getStage(latestGame.rawFishermanState) + "=?=" + stageAfterReplace);
+	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
 		console.log("CHANGE IN STAGE");
 		resetHeaders();
 	}
 	//need to add randomness here
 	model.headers.forEach(function(_header){
-		replaceHeader(_header, swapOutStats(headersToChooseFrom[0]));
+		replaceHeader(_header, swapOutStats(getRandomElement(headersToChooseFrom)));
 	});
-	lastStage = getStage(latestGame.rawFishermanState);
 }
 
 function resetHeaders(){
@@ -164,16 +165,21 @@ function replaceHyperlinks(){
 		resetHyperlinks();
 		return;
 	}
-	if(getStage(latestGame.rawFishermanState)!= lastStage){
-		console.log("CHANGE IN STAGE");
+
+	console.log("inside hl:");
+	console.log(getStage(latestGame.rawFishermanState) + "==" + stageAfterReplace);
+	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
+		console.log("CHANGE IN STATE HYPERLINKS")
 		resetHyperlinks();
 	}
 
 	//need to add randomness here
-	model.hyperlinks.forEach(function(_hyperlink){
-		modifyHyperlink(_hyperlink, hyperlinksImgsToChooseFrom[0]);
-	});
-	lastStage = getStage(latestGame.rawFishermanState);
+	if(getStage(latestGame.rawFishermanState)<2){
+		model.hyperlinks.forEach(function(_hyperlink){
+			modifyHyperlink(_hyperlink, hyperlinksImgsToChooseFrom);
+		});
+	}
+	
 }
 
 function resetHyperlinks(){
@@ -184,7 +190,8 @@ function resetHyperlinks(){
 	});
 }
 
-function modifyHyperlink(element, imgSrc){
+function modifyHyperlink(element, _hyperlinksImgsToChooseFrom){
+	
 	if(model.modifiedContent.hyperlinks.has(element)){
 		return;
 	}
@@ -196,42 +203,43 @@ function modifyHyperlink(element, imgSrc){
 	$(element).addClass("alreadyModified");
 	//lmao
 	//$(element).attr("href", imgSrc);
-	$(element).after("<span class = 'popupSrc'>"+ imgSrc +"</span>");
 
 
-	$(element).mouseover(function(){
 
 
-		var popupImg = new Image();
-		popupImg.onload = function() {
-			
-			var w = window.open("", "popupWindow", "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
-	    	var $w = $(w.document.body);
-	    	$w.html("<body><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></body>");
-			console.log(this.width +", " + this.height);
-			
-			
-			
-		}
-
-		popupImg.src = $(this).siblings(".popupSrc")[0].innerHTML;
-		
-	});
+	
 }
 
 function changeHyperlinkBackToOriginal(element){
 	model.modifiedContent.hyperlinks.delete(element);
-	var srcChild = $(element).siblings(".popupSrc");
+	$(element).mousedown(function(){});
+	$(element).removeClass("alreadyModified");
+	$(element).removeClass("fishermanPopUp");
 	
-	if(srcChild.length!=0){
-		$(element).removeClass("alreadyModified");
-		$(element).removeClass("fishermanPopUp");
-		srcChild.remove();
-	}
 }
 
 $(document).ready(function(){
+
 	
+	$(document).on('click', ".fishermanPopUp", function() {
+		for(var i = 0; i< 3; i++){
+			var popupImg = new Image();
+		
+			
+			popupImg.onload = function() {
+				var w = window.open("", new Date().getTime(), "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
+		    	var $w = $(w.document.body);
+		    	$w.html("<body><style>img{width: 100%;height:100%;}</style>"+
+		    		"<img  src = '"+ this.src+ "'>"+
+		    		+"</body>");
+		    	console.log(this.src);
+				
+				console.log(this.width +", " + this.height);
+			}
+
+			popupImg.src = getRandomElement(latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)]);
+		}
+	});
 
 });
 

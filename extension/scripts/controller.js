@@ -275,7 +275,7 @@ function refreshGame(){
 
 
 
-
+var stageAfterReplace= 0;
 function replaceContent(){
 	if(isFishingGame){
 		return;
@@ -287,6 +287,8 @@ function replaceContent(){
 		replaceHyperlinks();
 		
 	}
+
+	stageAfterReplace = getStage(latestGame.rawFishermanState);
 	
 	// console.log("update");
 }

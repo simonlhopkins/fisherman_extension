@@ -33,7 +33,13 @@ function loadOurContent(){
 
 
     //popups
-    addPopup("/images/BaitClub.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/BaitClub.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/BaitTackle.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/BobsBait.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/FishPole.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/Gift.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/SexyMan.png", [0,1,2,3,4]);
+    addPopup("/images/Ads/YouWin.png", [0,1,2,3,4]);
 }
 
 
@@ -141,6 +147,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     	chrome.storage.sync.set({'game': emptyGame}, function(result) {
             var emptyGameData = new Object();
             emptyGameData.game = emptyGame;
+            loadOurContent();
             chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: emptyGameData}, function(){
 
             });

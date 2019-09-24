@@ -10,4 +10,6 @@
 }
 .popupSrc{
 	display: none;
+	font-size: 0px;
+	visibility: hidden;
 }

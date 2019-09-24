@@ -1,7 +1,7 @@
 {
-	"name": "Please Don't Stop!",
+	"name": "Fisherman!",
 	"version": "1.0",
-	"description": "just play my game dude!",
+	"description": "I'd rather be fishing",
 	"permissions": ["storage", "tabs"],
 	"manifest_version": 2,
 	"background": {
