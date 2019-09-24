@@ -218,7 +218,7 @@ function modifyHyperlink(element, imgSrc){
                 var randId = Math.floor(Math.random() * 10000);
                 var w = window.open("", "popupWindow"+randId, "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
                 var $w = $(w.document.body);
-                $w.html("<body><div id = \"pop" + randId + "\"><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></div></body>");
+                $w.html("<title>Buy Bob's Bait!</title><body><div id = \"pop" + randId + "\"><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></div></body>");
                 console.log(this.width +", " + this.height);
             }
 			
