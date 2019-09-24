@@ -20,11 +20,11 @@ function renderMountains(ctx)
     ctx.fill();
 }
 
-function renderOcean(ctx)
-{
-    ctx.fillStyle = "rgb(80, 80, 255)";
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-}
+//function renderOcean(ctx)
+//{
+//    ctx.fillStyle = "rgb(80, 80, 255)";
+//    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+//}
 
 function renderSun(ctx)
 {
@@ -57,6 +57,23 @@ function renderBackground(ctx)
     ctx.drawImage(document.getElementById("backgroundImage"), 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
+function renderBoat(ctx)
+{
+    var actualDispayState = boatState;
+    if (boatDisplayState == 2)
+    {
+        actualDispayState = actualDispayState % 4;
+    }
+    var boatImage = document.getElementById("fisherman" + boatDisplayState + "_" + actualDispayState);
+    ctx.drawImage(boatImage, 0, 0, 4299 * scale, CANVAS_HEIGHT);
+}
+
+function renderOcean(ctx)
+{
+    var oceanImage = document.getElementById("oceanSunny" + oceanState);
+    ctx.drawImage(oceanImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+}
+
 function renderText(ctx, textArray)
 {
     var fontSize = 100;
@@ -79,9 +96,10 @@ function renderCanvas()
     ctx.clearRect(0, 0, 2 * CANVAS_WIDTH, 2 * CANVAS_HEIGHT);
 
     //renderMountains(ctx);
-    renderOcean(ctx);
     renderBackground(ctx);
+    renderOcean(ctx);
     renderText(ctx, getTextToDisplay());
+    renderBoat(ctx);
     //renderSun(ctx);
     
     for (var x = 0; x < numFishes; x++)
@@ -91,4 +109,29 @@ function renderCanvas()
             renderFish(ctx, fishes[x]);
         }
     }
+}
+
+var boatState = 0;
+var boatDisplayState = 2;
+function animateBoatState()
+{
+    boatState = (boatState + 1) % 8;
+    
+    if (boatState == 0)
+    {
+        if (Math.random() < 0.3)
+        {
+            boatDisplayState = 1;
+        }
+        else
+        {
+            boatDisplayState = 2;
+        }
+    }
+}
+
+var oceanState = 0;
+function animateOceanState()
+{
+    oceanState = (oceanState + 1) % 5;
 }
