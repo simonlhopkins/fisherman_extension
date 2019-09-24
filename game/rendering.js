@@ -2,9 +2,16 @@ var FISH_WIDTH = 194;
 var FISH_HEIGHT = 116;
 
 var fishImages = [
+                  [
                   document.getElementById("fishGif0"),
                   document.getElementById("fishGif1"),
                   document.getElementById("fishGif2")
+                  ],
+                  [
+                   document.getElementById("fishGif0back"),
+                   document.getElementById("fishGif1back"),
+                   document.getElementById("fishGif2back")
+                   ]
                   ];
 
 var boatImages = [
@@ -45,12 +52,6 @@ function renderMountains(ctx)
     ctx.fill();
 }
 
-//function renderOcean(ctx)
-//{
-//    ctx.fillStyle = "rgb(80, 80, 255)";
-//    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-//}
-
 function renderSun(ctx)
 {
     ctx.beginPath();
@@ -61,20 +62,16 @@ function renderSun(ctx)
 
 function renderFish(ctx, fish)
 {
+    var fishSet = 0;
+    
     if (Math.abs(fish.angle) < 1.57)
     {
-        ctx.translate(fish.currentPoint.x + (FISH_WIDTH * 0.5), fish.currentPoint.y + (FISH_HEIGHT * 0.5));
-        ctx.scale(-1, 1);
-        ctx.drawImage(fishImages[fish.gifState], 0, 0, FISH_WIDTH, FISH_HEIGHT);
-        ctx.scale(-1, 1);
-        ctx.translate(-fish.currentPoint.x - (FISH_WIDTH * 0.5), -fish.currentPoint.y - (FISH_HEIGHT * 0.5));
+        fishSet = 1;
     }
-    else
-    {
-        ctx.translate(fish.currentPoint.x, fish.currentPoint.y);
-        ctx.drawImage(fishImages[fish.gifState], 0, 0, FISH_WIDTH, FISH_HEIGHT);
-        ctx.translate(-fish.currentPoint.x, -fish.currentPoint.y);
-    }
+    
+    ctx.translate(fish.currentPoint.x, fish.currentPoint.y);
+    ctx.drawImage(fishImages[fishSet][fish.gifState], 0, 0, FISH_WIDTH, FISH_HEIGHT);
+    ctx.translate(-fish.currentPoint.x, -fish.currentPoint.y);
 }
 
 function renderBackground(ctx)
@@ -89,7 +86,7 @@ function renderBoat(ctx)
     {
         actualDispayState = actualDispayState % 4;
     }
-    var boatImage = (boatImages[boatDisplayState-1])[actualDispayState];//document.getElementById("fisherman" + boatDisplayState + "_" + actualDispayState);
+    var boatImage = (boatImages[boatDisplayState-1])[actualDispayState];
     ctx.drawImage((boatImages[boatDisplayState-1])[actualDispayState], 0, 0, 1720 * scale, CANVAS_HEIGHT);
 }
 
@@ -99,33 +96,55 @@ function renderOcean(ctx)
     ctx.drawImage(oceanImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
-function renderText(ctx, textArray)
+function renderText(ctx, textObj)
 {
-    var fontSize = 100;
-    var padding = 50;
+    if (textObj === undefined)
+    {
+        return;
+    }
+    
+    var textArray = textObj.text;
+    var point = textObj.point;
+    
+    var fontSize = 50;
+    var padding = 25;
     ctx.font = String(fontSize) + "px Comic Sans MS";
     
-    ctx.fillStyle = "rgb(255, 255, 255)";
+    var timeDiff = (new Date()).getTime() - interpolationTime;
+    var interpolationValue = timeDiff / (1000 * timeBetweenSentence);
+    
+    interpolationValue = Math.min(Math.max(interpolationValue, 0), 1);
+    
+    var alpha = 1.0;
+    
+    if (interpolationValue > 0.9)
+    {
+        alpha = (1.0 - interpolationValue) / 0.10;
+    }
+    else if (interpolationValue < 0.10)
+    {
+        alpha = (interpolationValue / 0.10);
+    }
+
+    
+    ctx.fillStyle = "rgba(255, 255, 255, " + alpha +")";
     
     for (var x = 0; x < textArray.length; x++)
     {
-        ctx.fillText(textArray[x], padding, (fontSize + padding) * (1 + x));
+        ctx.fillText(textArray[x], point.x + padding, point.y + ((fontSize + padding) * (1 + x)));
     }
 }
 
 function renderCanvas()
 {
-    var canvas = document.getElementById("maincanvas");
     var ctx = canvas.getContext("2d");
     
     ctx.clearRect(0, 0, 2 * CANVAS_WIDTH, 2 * CANVAS_HEIGHT);
 
-    //renderMountains(ctx);
     renderBackground(ctx);
     renderOcean(ctx);
-    renderText(ctx, getTextToDisplay());
     renderBoat(ctx);
-    //renderSun(ctx);
+    renderText(ctx, getTextToDisplay());
     
     for (var x = 0; x < numFishes; x++)
     {
