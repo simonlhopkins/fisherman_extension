@@ -272,6 +272,7 @@ function replaceContent(){
 		
 		replaceImagesWithPoloroids();
 		replaceHeaders();
+		replaceHyperlinks();
 		
 	}
 	

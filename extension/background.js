@@ -13,8 +13,9 @@ emptyGame.replacementContent = new Object();
 
 
 
-emptyGame.replacementContent.images = [[], [], [], [], []]
-emptyGame.replacementContent.headers = [[], [], [], [], []]
+emptyGame.replacementContent.images = [[], [], [], [], []];
+emptyGame.replacementContent.headers = [[], [], [], [], []];
+emptyGame.replacementContent.popUps = [[], [], [], [], []];
 // I will have to manually set all of the images here
 
 function loadOurContent(){
@@ -30,6 +31,9 @@ function loadOurContent(){
     addHeader("I'm getting a lil lonley", [3]);
     addHeader("I've only caught <fish_caught> fish with you and you've spent <timeSpentFishing> with me:(", [0, 1, 2]);
 
+
+    //popups
+    addPopup("/images/BaitClub.png", [0,1,2,3,4]);
 }
 
 
@@ -43,6 +47,18 @@ function addImage(src, levels){
             continue;
         }
         emptyGame.replacementContent.images[levels[i]].push(imgSrc);
+    }
+}
+
+function addPopup(src, levels){
+    var imgSrc = chrome.runtime.getURL(src);
+    
+    for(var i = 0; i<levels.length; i++){
+        if(levels[i]>=emptyGame.replacementContent.popUps.length){
+            console.log("invalid level");
+            continue;
+        }
+        emptyGame.replacementContent.popUps[levels[i]].push(imgSrc);
     }
 }
 

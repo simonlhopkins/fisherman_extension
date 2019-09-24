@@ -4,6 +4,7 @@ var model = new Object();
 model.modifiedContent = new Object();
 model.modifiedContent.images = new Set();
 model.modifiedContent.headers = new Set();
+model.modifiedContent.hyperlinks = new Set();
 
 
 //code for generating the model on page load
@@ -29,6 +30,11 @@ function populateModel(){
 	});
 	$("h4").each(function(){
 		model.headers.add(this);
+	});
+
+	model.hyperlinks = new Set();
+	$("a").each(function(){
+		model.hyperlinks.add(this);
 	});
 
 }

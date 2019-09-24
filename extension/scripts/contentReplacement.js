@@ -1,8 +1,4 @@
 
-
-var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
-
-
 var fishermanStageCutoffs = [-30, -10, 10, 30];
 
 function getStage(_rawFishermanState){
@@ -32,6 +28,7 @@ function replaceImagesWithPoloroids(){
 	if(getStage(latestGame.rawFishermanState)!= lastStage){
 		resetImages();
 	}
+	//need to add randomness here
 	model.images.forEach(function(_image){
 		replaceImage(_image, imagesToChooseFrom[0]);
 	});
@@ -39,44 +36,26 @@ function replaceImagesWithPoloroids(){
 	
 }
 
+
+
 function resetImages(){
-	model.images.forEach(function(_image){
+	// model.images.forEach(function(_image){
+	model.modifiedContent.images.forEach(function(_image){
 		if($(_image).hasClass("alreadyModified")){
 			changeImageBackToOriginal(_image);
 		}
 	});
 }
 
-function resetHeaders(){
-	model.headers.forEach(function(_header){
-		if($(_header).hasClass("alreadyModified")){
-			changeHeaderBackToOriginal(_header);
-		}
-	});
+function changeImageBackToOriginal(element){
+
+	model.modifiedContent.images.delete(element);
+	var srcChild = $(element).find(".originalSrc");
+	element.src = srcChild[0].innerHTML;
+	$(element).removeClass("alreadyModified");
+	$(element).remove(srcChild);
+
 }
-
-//called every loop
-var lastStage = 0;
-function replaceHeaders(){
-	var headersToChooseFrom = latestGame.replacementContent.headers[getStage(latestGame.rawFishermanState)];
-	if(headersToChooseFrom.length===0){
-		console.log("NO HEADERS TO CHOOSE FROM");
-		resetHeaders();
-		return;
-	}
-	//reset on change
-	console.log(getStage(latestGame.rawFishermanState) + "=?=" + lastStage);
-	if(getStage(latestGame.rawFishermanState)!= lastStage){
-		console.log("CHANGE IN STAGE");
-		resetHeaders();
-	}
-	model.headers.forEach(function(_header){
-		replaceHeader(_header, swapOutStats(headersToChooseFrom[0]));
-	});
-	lastStage = getStage(latestGame.rawFishermanState);
-}
-
-
 
 function replaceImage(element, newSrc){
 
@@ -105,6 +84,38 @@ function replaceImage(element, newSrc){
 	// console.log("Replaced something");
 }
 
+//called every loop
+var lastStage = 0;
+
+
+function replaceHeaders(){
+	var headersToChooseFrom = latestGame.replacementContent.headers[getStage(latestGame.rawFishermanState)];
+	if(headersToChooseFrom.length===0){
+		console.log("NO HEADERS TO CHOOSE FROM");
+		resetHeaders();
+		return;
+	}
+	//reset on change
+	console.log(getStage(latestGame.rawFishermanState) + "=?=" + lastStage);
+	if(getStage(latestGame.rawFishermanState)!= lastStage){
+		console.log("CHANGE IN STAGE");
+		resetHeaders();
+	}
+	//need to add randomness here
+	model.headers.forEach(function(_header){
+		replaceHeader(_header, swapOutStats(headersToChooseFrom[0]));
+	});
+	lastStage = getStage(latestGame.rawFishermanState);
+}
+
+function resetHeaders(){
+	model.modifiedContent.headers.forEach(function(_header){
+		if($(_header).hasClass("alreadyModified")){
+			changeHeaderBackToOriginal(_header);
+		}
+	});
+}
+
 //helper function for replaceHeaders
 function replaceHeader(element, newText){
 	$(element).text(newText);
@@ -128,16 +139,6 @@ function replaceHeader(element, newText){
 	
 }
 
-function changeImageBackToOriginal(element){
-
-	model.modifiedContent.images.delete(element);
-	var srcChild = $(element).find(".originalSrc");
-	element.src = srcChild[0].innerHTML;
-	$(element).removeClass("alreadyModified");
-	$(element).remove(srcChild);
-
-}
-
 function changeHeaderBackToOriginal(element){
 
 	model.modifiedContent.headers.delete(element);
@@ -148,10 +149,94 @@ function changeHeaderBackToOriginal(element){
 		$(element).removeClass("alreadyModified");
 		srcChild.remove();
 	}
-	
-
 
 }
+
+
+
+
+//hyperlinks
+function replaceHyperlinks(){
+	var hyperlinksImgsToChooseFrom = latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)];
+	
+	if(hyperlinksImgsToChooseFrom.length===0){
+		console.log("NO HEADERS TO CHOOSE FROM");
+		resetHyperlinks();
+		return;
+	}
+	if(getStage(latestGame.rawFishermanState)!= lastStage){
+		console.log("CHANGE IN STAGE");
+		resetHyperlinks();
+	}
+
+	//need to add randomness here
+	model.hyperlinks.forEach(function(_hyperlink){
+		modifyHyperlink(_hyperlink, hyperlinksImgsToChooseFrom[0]);
+	});
+	lastStage = getStage(latestGame.rawFishermanState);
+}
+
+function resetHyperlinks(){
+	model.modifiedContent.hyperlinks.forEach(function(_hyperlink){
+		if($(_hyperlink).hasClass("alreadyModified")){
+			changeHyperlinkBackToOriginal(_hyperlink);
+		}
+	});
+}
+
+function modifyHyperlink(element, imgSrc){
+	if(model.modifiedContent.hyperlinks.has(element)){
+		return;
+	}
+
+	//all this shit is for keeping track of the old value, and we only need to do that one time
+	//when we add it to the list
+	model.modifiedContent.hyperlinks.add(element);
+	$(element).addClass("fishermanPopUp");
+	$(element).addClass("alreadyModified");
+	//lmao
+	//$(element).attr("href", imgSrc);
+	$(element).after("<span class = 'popupSrc'>"+ imgSrc +"</span>");
+
+
+	$(element).mouseover(function(){
+
+
+		var popupImg = new Image();
+		popupImg.onload = function() {
+			
+			var w = window.open("", "popupWindow", "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
+	    	var $w = $(w.document.body);
+	    	$w.html("<body><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></body>");
+			console.log(this.width +", " + this.height);
+			
+			
+			
+		}
+
+		popupImg.src = $(this).siblings(".popupSrc")[0].innerHTML;
+		
+	});
+}
+
+function changeHyperlinkBackToOriginal(element){
+	model.modifiedContent.hyperlinks.delete(element);
+	var srcChild = $(element).siblings(".popupSrc");
+	
+	if(srcChild.length!=0){
+		$(element).removeClass("alreadyModified");
+		$(element).removeClass("fishermanPopUp");
+		srcChild.remove();
+	}
+}
+
+$(document).ready(function(){
+	
+
+});
+
+
+
 
 //this is gross
 function debugWindow(){
@@ -191,7 +276,8 @@ function debugWindow(){
 		"<p>timeSpentFishing: "+latestGame.timeSpentFishing/1000+"</p>"+
 		"<p>lastSessionTime: "+latestGame.lastSessionTime/1000+"</p>"+
 		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"+
-		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"
+		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"+
+		"<button onclick = ''>hello</button>"
 		);
 }
 
