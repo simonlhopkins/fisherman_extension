@@ -1,5 +1,5 @@
-var FISH_WIDTH = 120;
-var FISH_HEIGHT = 60;
+var FISH_WIDTH = 194;
+var FISH_HEIGHT = 116;
 
 function renderMountains(ctx)
 {
@@ -36,11 +36,20 @@ function renderSun(ctx)
 
 function renderFish(ctx, fish)
 {
-    ctx.translate(fish.currentPoint.x, fish.currentPoint.y);
-    //ctx.rotate(fish.angle);
-    ctx.drawImage(document.getElementById("fishImage"), 0, 0, FISH_WIDTH, FISH_HEIGHT);
-    //ctx.rotate(-fish.angle);
-    ctx.translate(-fish.currentPoint.x, -fish.currentPoint.y);
+    if (Math.abs(fish.angle) < 1.57)
+    {
+        ctx.translate(fish.currentPoint.x + (FISH_WIDTH * 0.5), fish.currentPoint.y + (FISH_HEIGHT * 0.5));
+        ctx.scale(-1, 1);
+        ctx.drawImage(document.getElementById("fishGif" + fish.gifState), 0, 0, FISH_WIDTH, FISH_HEIGHT);
+        ctx.scale(-1, 1);
+        ctx.translate(-fish.currentPoint.x - (FISH_WIDTH * 0.5), -fish.currentPoint.y - (FISH_HEIGHT * 0.5));
+    }
+    else
+    {
+        ctx.translate(fish.currentPoint.x, fish.currentPoint.y);
+        ctx.drawImage(document.getElementById("fishGif" + fish.gifState), 0, 0, FISH_WIDTH, FISH_HEIGHT);
+        ctx.translate(-fish.currentPoint.x, -fish.currentPoint.y);
+    }
 }
 
 function renderBackground(ctx)
