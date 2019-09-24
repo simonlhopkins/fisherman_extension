@@ -42,9 +42,8 @@ window.addEventListener('message', (event) => {
     	if (event.data.message && (event.data.message === "Caught a fish!")) {
     		// then update our fish caught count
     		fish_caught_since_update += event.data.number;
-    		// console.log("Fish caught: " + fish_caught_since_update + " this time: " + event.data.number)
-    		// console.log("Caught " + fish_caught_since_update + " fish since update");
-    		//chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+    		// increase happiness since you caught a fish
+    		rawFishermanStateDelta += 1;
     	}
     	else if (event.data.message === "setGame"){
             // overwrite the game stored on this script
