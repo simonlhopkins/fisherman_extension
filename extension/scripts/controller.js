@@ -105,6 +105,10 @@ function initializeIfNotFishingGame() {
 	window.onfocus = onTabFocus;
 }
 
+function clamp(num, min, max) {
+	return Math.min(Math.max(num, min), max);
+}
+
 //function for focusing on the fisherman game tab
 var gameStateTimeout= null;
 
@@ -175,7 +179,7 @@ function updateGameData(game) {
     	rawFishermanStateDelta = 0;
 	}
 	
-	game.rawFishermanState = Math.clamp(game.rawFishermanState, -45, 45);
+	game.rawFishermanState = clamp(game.rawFishermanState, -45, 45);
 
 	game.modFishermanState = game.rawFishermanState;
 
