@@ -1,7 +1,5 @@
 var fishes = [];
 var numFishes = 10;
-var CANVAS_WIDTH = 3200;
-var CANVAS_HEIGHT = 1800;
 var latestGame = null; // copy of the meta-game data
 
 
@@ -11,6 +9,8 @@ function main()
     
     document.getElementById("maincanvas").addEventListener("click", clickFunction);
     var t = setInterval(globalUpdate, 16);
+    var a = setInterval(animateBoatState, 500);
+    var b = setInterval(animateOceanState, 500);
     fetchNewText();
 }
 
@@ -86,7 +86,10 @@ function globalUpdate()
         fishCounter = 0;
     }
     
-    renderCanvas();
+    //if (fishCounter % 2 == 0)
+    //{
+        renderCanvas();
+    //}
 }
 
 function clickFunction()

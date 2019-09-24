@@ -1,0 +1,4 @@
+var CANVAS_WIDTH = 3200;
+var CANVAS_HEIGHT = 1800;
+var scale = (CANVAS_HEIGHT / 3035);
+
