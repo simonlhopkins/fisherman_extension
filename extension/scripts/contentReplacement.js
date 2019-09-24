@@ -182,6 +182,11 @@ function replaceHyperlinks(){
 	
 }
 
+function randomElementInList(list)
+{
+    return list[Math.floor(Math.random() * list.length)];
+}
+
 function resetHyperlinks(){
 	model.modifiedContent.hyperlinks.forEach(function(_hyperlink){
 		if($(_hyperlink).hasClass("alreadyModified")){

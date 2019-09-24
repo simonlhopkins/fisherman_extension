@@ -1,6 +1,31 @@
 var FISH_WIDTH = 194;
 var FISH_HEIGHT = 116;
 
+var fishImages = [
+                  document.getElementById("fishGif0"),
+                  document.getElementById("fishGif1"),
+                  document.getElementById("fishGif2")
+                  ];
+
+var boatImages = [
+                  [
+                   document.getElementById("fisherman1_0"),
+                   document.getElementById("fisherman1_1"),
+                   document.getElementById("fisherman1_2"),
+                   document.getElementById("fisherman1_3"),
+                   document.getElementById("fisherman1_4"),
+                   document.getElementById("fisherman1_5"),
+                   document.getElementById("fisherman1_6"),
+                   document.getElementById("fisherman1_7")
+                  ],
+                  [
+                   document.getElementById("fisherman2_0"),
+                   document.getElementById("fisherman2_1"),
+                   document.getElementById("fisherman2_2"),
+                   document.getElementById("fisherman2_3")
+                  ]
+];
+
 function renderMountains(ctx)
 {
     ctx.beginPath();
@@ -40,14 +65,14 @@ function renderFish(ctx, fish)
     {
         ctx.translate(fish.currentPoint.x + (FISH_WIDTH * 0.5), fish.currentPoint.y + (FISH_HEIGHT * 0.5));
         ctx.scale(-1, 1);
-        ctx.drawImage(document.getElementById("fishGif" + fish.gifState), 0, 0, FISH_WIDTH, FISH_HEIGHT);
+        ctx.drawImage(fishImages[fish.gifState], 0, 0, FISH_WIDTH, FISH_HEIGHT);
         ctx.scale(-1, 1);
         ctx.translate(-fish.currentPoint.x - (FISH_WIDTH * 0.5), -fish.currentPoint.y - (FISH_HEIGHT * 0.5));
     }
     else
     {
         ctx.translate(fish.currentPoint.x, fish.currentPoint.y);
-        ctx.drawImage(document.getElementById("fishGif" + fish.gifState), 0, 0, FISH_WIDTH, FISH_HEIGHT);
+        ctx.drawImage(fishImages[fish.gifState], 0, 0, FISH_WIDTH, FISH_HEIGHT);
         ctx.translate(-fish.currentPoint.x, -fish.currentPoint.y);
     }
 }
@@ -64,8 +89,8 @@ function renderBoat(ctx)
     {
         actualDispayState = actualDispayState % 4;
     }
-    var boatImage = document.getElementById("fisherman" + boatDisplayState + "_" + actualDispayState);
-    ctx.drawImage(boatImage, 0, 0, 4299 * scale, CANVAS_HEIGHT);
+    var boatImage = (boatImages[boatDisplayState-1])[actualDispayState];//document.getElementById("fisherman" + boatDisplayState + "_" + actualDispayState);
+    ctx.drawImage((boatImages[boatDisplayState-1])[actualDispayState], 0, 0, 1720 * scale, CANVAS_HEIGHT);
 }
 
 function renderOcean(ctx)
