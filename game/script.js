@@ -33,12 +33,15 @@ function generateFishes()
         newFish.interpolationStep = 1.0 / (Math.random() * 1000 + 250);
         newFish.currentInterpolation = 0.0;
         newFish.visible = (Math.random() > 0.5);
+        newFish.gifState = Math.floor(3.0 * Math.random());
         var yx = (newFish.endPoint.y - newFish.startPoint.y) / (newFish.endPoint.x - newFish.startPoint.x);
         newFish.angle = Math.atan2((newFish.endPoint.y - newFish.startPoint.y), (newFish.endPoint.x - newFish.startPoint.x));
         fishes.push(newFish);
     }
 }
 
+var fishFramesBetween = 10;
+var fishCounter = 0;
 function updateFish(fish)
 {
     fish.currentInterpolation += fish.interpolationStep;
@@ -60,14 +63,27 @@ function updateFish(fish)
                             fish.currentInterpolation * fish.endPoint.x);
     fish.currentPoint.y = ((1.0 - fish.currentInterpolation) * fish.startPoint.y +
                             fish.currentInterpolation * fish.endPoint.y);
-                              
+    
+    
+    
+    if (fishCounter >= fishFramesBetween)
+    {
+        fish.gifState = (fish.gifState + 1) % 3;
+    }
+    
+    
 }
 
 function globalUpdate()
 {
+    fishCounter++;
     for (var x = 0; x < numFishes; x++)
     {
         updateFish(fishes[x]);
+    }
+    if (fishCounter >= fishFramesBetween)
+    {
+        fishCounter = 0;
     }
     
     renderCanvas();
@@ -96,7 +112,7 @@ function clickFunction()
     }
     if (fishCaughtThisTime > 0) {
         notifyFishCaught(fishCaughtThisTime);
-        requestNextLine(); // just for testing
+        //requestNextLine(); // just for testing
     }
 }
 
@@ -129,7 +145,10 @@ window.addEventListener('message', (event) => {
         }
         else if (event.data.message === "nextFishermanLine") {
             sayLine(event.data.data);
-            ingestText(event.data.data.line, 2, 5); //numbers need to be passed.
+            var text = event.data.data.line;
+            var t1 = event.data.data.timeToNextStory;
+            var t2 = event.data.data.timeForEachLine;
+            ingestText(text, t2, t1);
         }
         // else {
         //     console.log("Fishing Game script received unknown message: " + event.data.message);
