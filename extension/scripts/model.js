@@ -1,25 +1,35 @@
 var model = new Object();
 
+//each page has its own model
+model.modifiedContent = new Object();
+model.modifiedContent.images = new Set();
+model.modifiedContent.headers = new Set();
+
+
 //code for generating the model on page load
 
+
+
 function populateModel(){
-	model.images = [];
+	model.images = new Set();
 	$("img").each(function(){
-		model.images.push(this);
+		model.images.add(this);
 	});
 
 
-	model.headers = [];
+	model.headers = new Set();
 	$("h1").each(function(){
-		model.headers.push(this);
+		model.headers.add(this);
 	});
 	$("h2").each(function(){
-		model.headers.push(this);
+		model.headers.add(this);
 	});
 	$("h3").each(function(){
-		model.headers.push(this);
+		model.headers.add(this);
 	});
-
+	$("h4").each(function(){
+		model.headers.add(this);
+	});
 
 }
 

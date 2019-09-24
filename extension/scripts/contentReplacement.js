@@ -1,17 +1,75 @@
+
+
 var fishSrc = chrome.runtime.getURL("images/temp1.jpg");
 
 
+var fishermanStageCutoffs = [-30, -10, 10, 30];
+
+function getStage(_rawFishermanState){
+
+	for(var i = 0; i< fishermanStageCutoffs.length; i++){
+		if(_rawFishermanState < fishermanStageCutoffs[i]){
+			if(i==0){
+				return i;
+			}
+			if(_rawFishermanState>=fishermanStageCutoffs[i-1]){
+				return i;
+			}
+		}
+
+	}
+	return i;
+}
+
 function replaceImagesWithPoloroids(){
 
-	for(var i = 0; i< model.images.length; i++){
-		if($(model.images[i]).hasClass("alreadyModified")){
-			changeImageBackToOriginal(model.images[i]);
-			continue;
-		}
-		replaceImage(model.images[i], fishSrc);
+	var imagesToChooseFrom = latestGame.replacementContent.images[getStage(latestGame.rawFishermanState)];
+	if(imagesToChooseFrom.length===0){
+		resetImages();
+		return;
 	}
+	//reset on change
+	if(getStage(latestGame.rawFishermanState)!= lastStage){
+		resetImages();
+	}
+	model.images.forEach(function(_image){
+		replaceImage(_image, imagesToChooseFrom[0]);
+	});
+	var lastStage = getStage(latestGame.rawFishermanState);
 	
+}
 
+function resetImages(){
+	model.images.forEach(function(_image){
+		if($(_image).hasClass("alreadyModified")){
+			changeImageBackToOriginal(_image);
+		}
+	});
+}
+
+function resetHeaders(){
+	model.headers.forEach(function(_header){
+		if($(_header).hasClass("alreadyModified")){
+			changeHeaderBackToOriginal(_header);
+		}
+	});
+}
+
+function replaceHeaders(){
+
+	var headersToChooseFrom = latestGame.replacementContent.headers[getStage(latestGame.rawFishermanState)];
+	if(headersToChooseFrom.length===0){
+		resetHeaders();
+		return;
+	}
+	//reset on change
+	if(getStage(latestGame.rawFishermanState)!= lastStage){
+		resetHeaders();
+	}
+	model.headers.forEach(function(_header){
+		replaceHeader(_header, headersToChooseFrom[0]);
+	});
+	var lastStage = getStage(latestGame.rawFishermanState);
 }
 
 
@@ -21,7 +79,7 @@ function replaceImage(element, newSrc){
 	// the class in twitter seems to be the same, so we can use that to get background images
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw
 	// css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw	
-	
+	model.modifiedContent.images.add(element);
 	var originalSrc = $(element)[0].src;
 
 	$(element).removeAttr("ng-src");
@@ -37,29 +95,43 @@ function replaceImage(element, newSrc){
 	$(element).width(Math.min(width, height));
 	$(element).height(Math.min(width, height));
 
-
-
 	// console.log("Replaced something");
-		
+}
+
+function replaceHeader(element, newText){
+	model.modifiedContent.images.add(element);
+	var originalSrc = $(element).text();
+
+	$(element).text(newText);
+
+
+	$(element).addClass("alreadyModified");
+	$(element).append("<span class = 'originalSrc'>"+ originalSrc +"</span>");
 	
 }
 
 function changeImageBackToOriginal(element){
+
+	model.modifiedContent.images.delete(element);
 	var srcChild = $(element).find(".originalSrc");
-	var newImgChild = $(element).find(".newImg");
 	element.src = srcChild[0].innerHTML;
 	$(element).removeClass("alreadyModified");
 	$(element).remove(srcChild);
 
-	
+}
+
+function changeHeaderBackToOriginal(element){
+
+	model.modifiedContent.headers.delete(element);
+	var srcChild = $(element).find(".originalSrc");
+	$(element).text(srcChild[0].innerHTML);
+	$(element).removeClass("alreadyModified");
+	$(element).remove(srcChild);
 
 }
 
 
 function debugWindow(){
-	if(isFishingGame){
-		return;
-	}
 
 	if($("#debugWindow").length === 0){
 		$("body").append("<div id = 'debugWindow'</div>");
@@ -95,7 +167,8 @@ function debugWindow(){
 		"<p>lastTimeFocused: "+latestGame.lastTimeFocused+"</p>"+
 		"<p>timeSpentFishing: "+latestGame.timeSpentFishing/1000+"</p>"+
 		"<p>lastSessionTime: "+latestGame.lastSessionTime/1000+"</p>"+
-		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"
+		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"+
+		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"
 		);
 }
 

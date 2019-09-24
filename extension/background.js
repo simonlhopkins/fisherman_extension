@@ -9,9 +9,45 @@ emptyGame.timeSpentFishing = 0;
 emptyGame.lastSessionTime = 0;
 emptyGame.rawFishermanState = 0;
 emptyGame.modFishermanState = 0;
+emptyGame.replacementContent = new Object();
 
 
 
+emptyGame.replacementContent.images = [[], [], [], [], []]
+emptyGame.replacementContent.headers = [[], [], [], [], []]
+// I will have to manually set all of the images here
+
+function loadOurContent(){
+    addImage("/images/temp1.jpg", [0, 1]);
+    addHeader("come fish with me", [0, 1]);
+}
+
+
+function addImage(src, levels){
+    var imgSrc = chrome.runtime.getURL(src);
+    for(var i = 0; i<levels.length; i++){
+        if(levels[i]>=emptyGame.replacementContent.images.length){
+            console.log("invalid level");
+            continue;
+        }
+        emptyGame.replacementContent.images[levels[i]].push(imgSrc);
+    }
+}
+
+function addHeader(text, levels){
+    
+    for(var i = 0; i<levels.length; i++){
+        if(levels[i]>=emptyGame.replacementContent.images.length){
+            console.log("invalid level");
+            continue;
+        }
+        emptyGame.replacementContent.headers[levels[i]].push(text);
+    }
+}
+
+loadOurContent();
+
+console.log(emptyGame.replacementContent);
 
 
 chrome.storage.sync.get(['game'], function(result) {
@@ -28,9 +64,9 @@ chrome.storage.sync.get(['game'], function(result) {
 
     var emptyGameData = new Object();
     emptyGameData.game = emptyGame;
-    chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: emptyGameData}, function(){
+    // chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: emptyGameData}, function(){
 
-    });
+    // });
 
 });
 

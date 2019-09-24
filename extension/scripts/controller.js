@@ -2,8 +2,8 @@ var fish_caught_since_update = 0;
 var isFishingGame = false; // is this tab the fishing game?
 var latestGame = null; // store the game data
 // keep track of how much you've played the game
-var lastTimeBlurred = null;
-var lastTimeFocused = null;
+var lastTimeBlurred = 0;
+var lastTimeFocused = 0;
 var focusedOnThisTab = true;
 
 var rawFishermanStateDelta = 0;
@@ -44,7 +44,7 @@ window.addEventListener('message', (event) => {
     		fish_caught_since_update += event.data.number;
     		// console.log("Fish caught: " + fish_caught_since_update + " this time: " + event.data.number)
     		// console.log("Caught " + fish_caught_since_update + " fish since update");
-    		chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
+    		//chrome.runtime.sendMessage({message: "requestUpdateGame"}, function(){});
     	}
     	else if (event.data.message === "setGame"){
             // overwrite the game stored on this script
@@ -219,7 +219,6 @@ function onTabLoad() {
 	var n = d.getTime();
 
 	if(isFishingGame){
-		
 		initializeIfIsFishingGame();
 	}else{
 		initializeIfNotFishingGame();
@@ -230,18 +229,16 @@ function onTabLoad() {
 	//this is only for updating the content of the page, and connstantly refresshing the game every second
 	//if it is the fisherman game, then just refresh the game every frame, if it is another page, then don't repopulate model
 	setInterval(function(){
-		if(!isFishingGame){
-			$.when(populateModel()).done(refreshTab());
-		}else{
+		if(isFishingGame){
 			refreshGame();
+		}else{
+			$.when(populateModel()).done(refreshTab());
 		}
 	},1000);
 }
 
 function refreshTab() {
 	//updates the game with current 
-	
-	
 	if(focusedOnThisTab){
 		rawFishermanStateDelta += modTabDelta();
 	}
@@ -267,13 +264,12 @@ function replaceContent(){
 	if(isFishingGame){
 		return;
 	}
-
 	if (latestGame) {
 		
 		replaceImagesWithPoloroids();
+		replaceHeaders();
 		
 	}
-	
 	
 	// console.log("update");
 }
@@ -284,6 +280,7 @@ function modTabDelta(){
 	//slope of (x)(x-360)
 	var x = currentAwayTime;
 	//make sure slope won't get steeper past 180
+	if(latestGame.lastSessionTime<30)
 	x = Math.min(x, 180);
 	var slope = -(2*x);
 	slope/= 720;
@@ -293,6 +290,7 @@ function modGameDelta(){
 	//last time focussed
 	var currentFishingTime = (new Date().getTime() - latestGame.lastTimeFocused)/1000;
 	//slope of (x)(x-360)
+
 	var x = currentFishingTime;
 	var slope = 360-(2*x);
 	slope/= 720;
