@@ -191,8 +191,19 @@ function debugWindow(){
 		"<p>timeSpentFishing: "+latestGame.timeSpentFishing/1000+"</p>"+
 		"<p>lastSessionTime: "+latestGame.lastSessionTime/1000+"</p>"+
 		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"+
-		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"
+		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"+
+		"<button type=\"button\" id=\"resetGameButton\">Reset Game</button>"+
+		"<button type=\"button\" id=\"increaseHappinessGameButton\">Increase Happiness Stage</button>"+
+		"<button type=\"button\" id=\"decreaseHappinessGameButton\">Decrease Happiness Stage</button>"
 		);
+	$("#resetGameButton").on("click", sendClearGame);
+	$("#increaseHappinessGameButton").on("click", increaseHappinessStage);
+	$("#decreaseHappinessGameButton").on("click", decreaseHappinessStage);
+}
+
+
+function sendClearGame() {
+	chrome.runtime.sendMessage({message: "clearGame"}, function(){});
 }
 
 
