@@ -9,8 +9,8 @@ function main()
     
     document.getElementById("maincanvas").addEventListener("click", clickFunction);
     var t = setInterval(globalUpdate, 16);
-    var a = setInterval(animateBoatState, 500);
-    var b = setInterval(animateOceanState, 500);
+    var a = setInterval(animateBoatState, 1000);
+    var b = setInterval(animateOceanState, 1000);
     fetchNewText();
 }
 
