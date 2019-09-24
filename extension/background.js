@@ -21,8 +21,14 @@ emptyGame.replacementContent.popUps = [[], [], [], [], []];
 function loadOurContent(){
     //images
     addImage("/images/FishermanandSon_polaroid.png", [0, 1]);
-    addImage("/images/FishMan_polaroid.png", [3, 4]);
+    addImage("/images/FirstBoat_polaroid.png", [0, 1]);
+    addImage("/images/OldManStorm1_polaroid.png", [1, 2]);
     addImage("/images/OldManBigFish_polaroid.png", [1, 2, 3]);
+    addImage("/images/FishSoBig_polaroid.png", [2, 3]);
+    addImage("/images/OldMan_Polaroid.png", [2, 3, 4]);
+    addImage("/images/OldManSunrise_polaroid.png", [2, 3, 4]);
+    addImage("/images/OldSelfie_polaroid.png", [3, 4]);
+    addImage("/images/FishMan_polaroid.png", [3, 4]);
 
     //headers
     // addHeader("fish w me bitch im mad u have spent like <timeSpentFishing> with me:(", [0]);
@@ -122,7 +128,6 @@ function addHeader(text, levels){
 loadOurContent();
 
 console.log(emptyGame.replacementContent);
-
 
 chrome.storage.sync.get(['game'], function(result) {
 	// console.log("getting game");

@@ -169,9 +169,6 @@ function onTabFocus() {
 	var n = d.getTime();
 	lastTimeFocused = n;
 	focusedOnThisTab = true;
-
-	
-	
 }
 
 function onTabBlur() {

@@ -16,6 +16,13 @@ function getStage(_rawFishermanState){
 	}
 	return i;
 }
+
+function getReplaceChancePerStage(_rawFishermanState){
+	// just a linear slope going downwards from not very frequent at x=45 to very frequent at x=-45.
+	// .95 at -45 to .05 at 45, much more frequent to replace something at high anger (stage 0, etc).
+	return (-_rawFishermanState+45)*.01+.05
+}
+
 //called every loop
 function replaceImagesWithPoloroids(){
 
@@ -30,13 +37,17 @@ function replaceImagesWithPoloroids(){
 	}
 	//need to add randomness here
 	model.images.forEach(function(_image){
-		replaceImage(_image, imagesToChooseFrom[0]);
+		if (randomShouldReplace()) {
+			replaceImage(_image, imagesToChooseFrom[0]);
+		}
 	});
 	var lastStage = getStage(latestGame.rawFishermanState);
 	
 }
 
-
+function randomShouldReplace() {
+	return Math.random() <= getReplaceChancePerStage(latestGame.rawFishermanState)
+}
 
 function resetImages(){
 	// model.images.forEach(function(_image){
@@ -103,7 +114,9 @@ function replaceHeaders(){
 	}
 	//need to add randomness here
 	model.headers.forEach(function(_header){
-		replaceHeader(_header, swapOutStats(randomElementInList(headersToChooseFrom)));
+		if (randomShouldReplace()) {
+			replaceHeader(_header, swapOutStats(randomElementInList(headersToChooseFrom)));
+		}
 	});
 	lastStage = getStage(latestGame.rawFishermanState);
 }
@@ -171,7 +184,9 @@ function replaceHyperlinks(){
 
 	//need to add randomness here
 	model.hyperlinks.forEach(function(_hyperlink){
-		modifyHyperlink(_hyperlink, randomElementInList(hyperlinksImgsToChooseFrom));
+		if (randomShouldReplace()) {
+			modifyHyperlink(_hyperlink, randomElementInList(hyperlinksImgsToChooseFrom));
+		}
 	});
 	lastStage = getStage(latestGame.rawFishermanState);
 }
@@ -218,15 +233,11 @@ function modifyHyperlink(element, imgSrc){
                 var randId = Math.floor(Math.random() * 10000);
                 var w = window.open("", "popupWindow"+randId, "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
                 var $w = $(w.document.body);
-                $w.html("<title>Buy Bob's Bait!</title><body><div id = \"pop" + randId + "\"><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></div></body>");
+                $w.html("<title>Buy Bob's Bait!</title><body><div id = \"pop" + randId + "\"><a href=\"https://www.w3schools.com\"><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'>></a></div></body>");
                 console.log(this.width +", " + this.height);
             }
-			
-			
 		}
-
 		popupImg.src = $(this).siblings(".popupSrc")[0].innerHTML;
-		
 	});
 }
 
@@ -288,6 +299,7 @@ function debugWindow(){
 		"<p>lastSessionTime: "+latestGame.lastSessionTime/1000+"</p>"+
 		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"+
 		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"+
+		"<p>replaceChance: "+getReplaceChancePerStage(latestGame.rawFishermanState)+"</p>"+
 		"<button type=\"button\" id=\"resetGameButton\">Reset Game</button>"+
 		"<button type=\"button\" id=\"increaseHappinessGameButton\">Increase Happiness Stage</button>"+
 		"<button type=\"button\" id=\"decreaseHappinessGameButton\">Decrease Happiness Stage</button>"
