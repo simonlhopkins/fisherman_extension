@@ -112,7 +112,7 @@ function clickFunction()
     }
     if (fishCaughtThisTime > 0) {
         notifyFishCaught(fishCaughtThisTime);
-        requestNextLine(); // just for testing
+        //requestNextLine(); // just for testing
     }
 }
 
@@ -145,7 +145,10 @@ window.addEventListener('message', (event) => {
         }
         else if (event.data.message === "nextFishermanLine") {
             sayLine(event.data.data);
-            ingestText(event.data.data.line, 2, 5); //numbers need to be passed.
+            var text = event.data.data.line;
+            var t1 = event.data.data.timeToNextStory;
+            var t2 = event.data.data.timeForEachLine;
+            ingestText(text, t2, t1);
         }
         // else {
         //     console.log("Fishing Game script received unknown message: " + event.data.message);

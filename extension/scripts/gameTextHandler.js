@@ -21,5 +21,5 @@ window.addEventListener('message', (event) => {
 
 
 function getNextLine() {
-	return { line: "Oh they're biting alright!", timeSaid:4 };
+    return { line: "Oh they're biting alright!", timeToNextStory:5, timeForEachLine:2 };
 }
