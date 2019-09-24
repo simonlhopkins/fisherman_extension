@@ -34,6 +34,11 @@ function loadOurContent(){
 
     //popups
     addPopup("/images/BaitClub.png", [0,1,2,3,4]);
+    addPopup("/images/BaitTackle.png", [0,1,2,3,4]);
+    addPopup("/images/FishPole.png", [0,1,2,3,4]);
+    addPopup("/images/Gift.png", [0,1,2,3,4]);
+    addPopup("/images/SexyMan.png", [0,1,2,3,4]);
+    addPopup("/images/YouWin.png", [0,1,2,3,4]);
 }
 
 

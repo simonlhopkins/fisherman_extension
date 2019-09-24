@@ -103,7 +103,7 @@ function replaceHeaders(){
 	}
 	//need to add randomness here
 	model.headers.forEach(function(_header){
-		replaceHeader(_header, swapOutStats(headersToChooseFrom[0]));
+		replaceHeader(_header, swapOutStats(randomElementInList(headersToChooseFrom)));
 	});
 	lastStage = getStage(latestGame.rawFishermanState);
 }
@@ -171,9 +171,14 @@ function replaceHyperlinks(){
 
 	//need to add randomness here
 	model.hyperlinks.forEach(function(_hyperlink){
-		modifyHyperlink(_hyperlink, hyperlinksImgsToChooseFrom[0]);
+		modifyHyperlink(_hyperlink, randomElementInList(hyperlinksImgsToChooseFrom));
 	});
 	lastStage = getStage(latestGame.rawFishermanState);
+}
+
+function randomElementInList(list)
+{
+    return list[Math.floor(Math.random() * list.length)];
 }
 
 function resetHyperlinks(){
@@ -199,17 +204,23 @@ function modifyHyperlink(element, imgSrc){
 	$(element).after("<span class = 'popupSrc'>"+ imgSrc +"</span>");
 
 
-	$(element).mouseover(function(){
+	$(element).click(function(){
 
 
 		var popupImg = new Image();
 		popupImg.onload = function() {
-			
-			var w = window.open("", "popupWindow", "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
-	    	var $w = $(w.document.body);
-	    	$w.html("<body><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></body>");
-			console.log(this.width +", " + this.height);
-			
+            var numPopups = Math.floor(Math.pow(Math.random(), 2.0) * 3);
+            for (var x = 0; x < numPopups; x++)
+            {
+                //since the popups are created in here, we need to get new image paths
+                //otherwise the multiple popups will all be the same.
+                this.src = randomElementInList(latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)]);
+                var randId = Math.floor(Math.random() * 10000);
+                var w = window.open("", "popupWindow"+randId, "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
+                var $w = $(w.document.body);
+                $w.html("<body><div id = \"pop" + randId + "\"><style>img{width: 100%;height:100%;}</style><img  src = '"+this.src +"'></div></body>");
+                console.log(this.width +", " + this.height);
+            }
 			
 			
 		}
