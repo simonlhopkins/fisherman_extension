@@ -50,7 +50,7 @@ function loadOurContent(){
     addHeader("When are you coming back? The fish are biting real good today!", [2, 3]);
     addHeader("It’s a perfect day to catch the perfect fish!", [3, 4]);
     addHeader("Come back", [0, 1]);
-    addHeader("I’ll be waiting [player name], no matter how long it takes.", [0, 1]);
+    addHeader("I’ll be waiting, no matter how long it takes.", [0, 1]);
     addHeader("Have you ever tried out Bob’s Bait? I’m telling you, if you’re into buying branded bait that’s the stuff!", [3, 4]);
     addHeader("You caught <fish_caught> fish already! A natural!", [4]);
     
