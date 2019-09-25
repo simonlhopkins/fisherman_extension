@@ -1,6 +1,8 @@
 
 var fishermanStageCutoffs = [-30, -10, 10, 30];
 
+
+
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
@@ -314,10 +316,25 @@ $(document).ready(function(){
 			popupImg.src = getRandomElement(latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)]);
 		}
 	});
+	if(!isFishingGame){
+		setInterval(swingPage, 83);;
+	}
+
+	
 
 });
 
+var lambda = 0;
+function swingPage(){
+	
 
+	var scale = Math.max(0, (-latestGame.rawFishermanState-30)+(swingLerpAmount/12.0)*rawFishermanStateDelta);
+	scale*=50;
+	console.log($("html").offset());
+	$("html").offset({top: Math.sin(lambda) * scale, left: Math.cos(lambda) * scale});
+	lambda+=0.1;
+	swingLerpAmount++;
+}
 
 
 //this is gross
