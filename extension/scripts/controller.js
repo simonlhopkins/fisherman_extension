@@ -283,11 +283,13 @@ function replaceContent(){
 		replaceHeaders();
 		replaceHyperlinks();
 		
+		
+		console.log(model.modifiedContent.headers.size);
 	}
-	console.log(model.modifiedContent.headers.size);
 	stageAfterReplace = getStage(latestGame.rawFishermanState);
 	
-	// console.log("update");
+	
+	console.log(stageAfterReplace);
 }
 
 

@@ -54,7 +54,6 @@ function replaceImagesWithPoloroids(){
 		}
 	}
 
-	stageAfterReplace = getStage(latestGame.rawFishermanState);
 }
 
 function getRandomItemFromSet(set) {
@@ -118,23 +117,21 @@ function replaceImage(element, newSrc){
 function replaceHeaders(){
 	var headersToChooseFrom = latestGame.replacementContent.headers[getStage(latestGame.rawFishermanState)];
 	if(headersToChooseFrom.length===0){
-		console.log("NO HEADERS TO CHOOSE FROM");
+		console.log("RESETTING BECAUSE LENGTH IS 0");
 		resetHeaders();
 		return;
 	}
 	//reset on change
-	console.log(getStage(latestGame.rawFishermanState) + "=?=" + stageAfterReplace);
-	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
-		console.log("CHANGE IN STAGE");
+	if(getStage(latestGame.rawFishermanState) != stageAfterReplace){
+		console.log("RESETTING BECAUSE CHANGE OF STAGE");
 		resetHeaders();
 	}
 	//need to add randomness here
 	model.headers.forEach(function(_header){
 		if(model.modifiedContent.headers.has(_header)){
-			replaceHeader(_header, $(_header).siblings(".originalReplacement")[0].innerHTML);
+			replaceHeader(_header, $(_header).attr("originalReplacement"));
 		}
 		else{
-
 			replaceHeader(_header, getRandomElement(headersToChooseFrom));
 		}
 		
@@ -152,6 +149,7 @@ function resetHeaders(){
 //helper function for replaceHeaders
 function replaceHeader(element, newText){
 	
+	console.log("setting header text to "+ newText);
 	var origText = $(element).text();
 	$(element).text(swapOutStats(newText));
 
@@ -160,30 +158,32 @@ function replaceHeader(element, newText){
 		return;
 	}
 
-	model.modifiedContent.headers.add(element);
 	
-
+	
+	console.log("one time");
 
 	$(element).addClass("alreadyModified");
-	$(element).after("<span class = 'originalSrc'>"+ origText +"</span>");
-	$(element).after("<span class = 'originalReplacement'>"+ newText +"</span>");
-	console.log(newText);
+	$(element).attr("originalSrc", origText);
+	$(element).attr("originalReplacement", newText);
+
+	model.modifiedContent.headers.add(element);
 }
 
 function changeHeaderBackToOriginal(element){
 
 	model.modifiedContent.headers.delete(element);
-	var srcChild = $(element).siblings(".originalSrc");
-	var originalReplacement = $(element).siblings(".originalReplacement");
-	if(srcChild.length!=0){
-		$(element).text(srcChild[0].innerHTML);
-		$(element).removeClass("alreadyModified");
-		srcChild.remove();
+	
+	var src = $(element).attr("originalSrc");
+	var originalReplacement = $(element).attr("originalReplacement");
+
+	$(element).text(src);
+	$(element).removeClass("alreadyModified");
+	$(element).removeAttr("originalReplacement");
+	$(element).removeAttr("originalSrc");
+
 		
-	}
-	if(originalReplacement.length!=0){
-		originalReplacement.remove();
-	}
+	
+
 
 }
 
