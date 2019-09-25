@@ -1,5 +1,6 @@
 
 var fishermanStageCutoffs = [-30, -10, 10, 30];
+var lastStage = 2;
 
 function getStage(_rawFishermanState){
 
@@ -20,7 +21,8 @@ function getStage(_rawFishermanState){
 function getReplaceChancePerStage(_rawFishermanState){
 	// just a linear slope going downwards from not very frequent at x=45 to very frequent at x=-45.
 	// .95 at -45 to .05 at 45, much more frequent to replace something at high anger (stage 0, etc).
-	return (-_rawFishermanState+45)*.01+.05
+	// return (-_rawFishermanState+45)*.01+.05
+	return (-_rawFishermanState+45)*.005+.05 // made it less frequent than the comment because that was wayy too often
 }
 
 //called every loop
@@ -41,8 +43,7 @@ function replaceImagesWithPoloroids(){
 			replaceImage(_image, imagesToChooseFrom[0]);
 		}
 	});
-	var lastStage = getStage(latestGame.rawFishermanState);
-	
+	lastStage = getStage(latestGame.rawFishermanState);
 }
 
 function randomShouldReplace() {
