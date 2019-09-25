@@ -265,8 +265,8 @@ function modifyHyperlink(element, _hyperlinksImgsToChooseFrom){
 	$(element).addClass("fishermanPopUp");
 	$(element).addClass("alreadyModified");
 	$(element).css("color", "red");
-	//lmao
-	//$(element).attr("href", imgSrc);
+	
+	//$(element).attr("href", "https://kellyme213.github.io/games/fish/");
 
 
 
@@ -284,7 +284,7 @@ function changeHyperlinkBackToOriginal(element){
 
 $(document).ready(function(){
 	
-	$(document).on('mousedown', ".fishermanPopUp", function() {
+	$(document).on('mouseover', ".fishermanPopUp", function() {
 		for(var i = 0; i< 3; i++){
 			var popupImg = new Image();
 		
@@ -296,13 +296,16 @@ $(document).ready(function(){
 					$(w.document.head).html(
 						"<script src= 'http://code.jquery.com/jquery-3.4.1.js'"+
 	  					"integrity='sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU='"+
-	  					"crossorigin='anonymous'></script>"
+	  					"crossorigin='anonymous'></script>"+
+	  					"<title>BUY BOB'S BAIT!</title>"
+
 
 					);
+
 			    	$(w.document.body).html(
 			    		
 			    		"<style>img{width: 100%;height:100%;}</style>"+
-			    		"<img src = '" + src + "'>"
+			    		"<a href = 'https://kellyme213.github.io/games/fish/'><img src = '" + src + "'></a>"
 			    	);
 
 				}
