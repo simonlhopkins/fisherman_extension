@@ -11,6 +11,10 @@ emptyGame.rawFishermanState = 0;
 emptyGame.modFishermanState = 0;
 emptyGame.replacementContent = new Object();
 
+var currentBackgroundGame = null; // this is to prevent the write quotas
+var updatesSinceSyncing = 0;
+var maxUpdatesBeforeSyncing = 10;
+
 
 
 emptyGame.replacementContent.images = [[], [], [], [], []];
@@ -134,15 +138,18 @@ chrome.storage.sync.get(['game'], function(result) {
 	if(result.game === undefined){
 		chrome.storage.sync.set({'game': emptyGame}, function(result) {
 			console.log("setting new game because game is null");
-			
 		});
 	}
-	chrome.storage.sync.get(["game"], function(result){
-		console.log(result);
-	});
+    else {
+        // set the game that we have stored!
+        currentBackgroundGame = result.game;
+    }
+	// chrome.storage.sync.get(["game"], function(result){
+	// 	console.log(result);
+	// });
 
-    var emptyGameData = new Object();
-    emptyGameData.game = emptyGame;
+    // var emptyGameData = new Object();
+    // emptyGameData.game = emptyGame;
     // chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: emptyGameData}, function(){
 
     // });
@@ -156,35 +163,53 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	//if they want to just view the game data
     if (request.message === "getGame"){
     	// console.log("requested from: ");
-    	console.log(sender);
+    	// console.log(sender);
     	//have to set it in the callback to ensure that the value loads in time.
-    	chrome.storage.sync.get(['game'], function(result) {
+        if (currentBackgroundGame == null) {
+        	chrome.storage.sync.get(['game'], function(result) {
 
+                currentBackgroundGame = result.game; // update our current version of the game
 
+        		chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: result}, function(){
 
-    		chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: result}, function(){
-
+        		});
     		});
-		});
+        } else {
+            // just send them the version we have
+            chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: {'game': currentBackgroundGame}}, function(){});
+        }
     }
 
     if(request.message === "setGame"){
     	// console.log("setGame");
-    	chrome.storage.sync.set({'game': request.data}, function(result) {
-		});
+        updatesSinceSyncing++;
+        if (updatesSinceSyncing > maxUpdatesBeforeSyncing) {
+        	chrome.storage.sync.set({'game': request.data}, function(result) {
+    		});
+        } else {
+            // just set our local copy
+            currentBackgroundGame = request.data;
+        }
     }
 
     if (request.message === "requestUpdateGame") {
     	// console.log("background update game, is this supposed to happen?");
     	console.log("Recieved request update game");
-    	chrome.storage.sync.get(['game'], function(result) {
-    		chrome.tabs.sendMessage(sender.tab.id, {message: "updateGame", data: result}, function(){});
-            console.log(result.game.rawFishermanState);
-		});
+        if (currentBackgroundGame == null) {
+        	chrome.storage.sync.get(['game'], function(result) {
+        		chrome.tabs.sendMessage(sender.tab.id, {message: "updateGame", data: result}, function(){});
+                console.log(result.game.rawFishermanState);
+    		});
+        } else {
+            // just send the current copy
+            chrome.tabs.sendMessage(sender.tab.id, {message: "updateGame", data: {'game': currentBackgroundGame}}, function(){});
+        }
     }
 
     if(request.message === "clearGame"){
     	console.log("clearGame");
+
+        currentBackgroundGame = null; // so that we have to fetch it from storage
 
     	chrome.storage.sync.set({'game': emptyGame}, function(result) {
             var emptyGameData = new Object();
