@@ -1,6 +1,12 @@
 
 var fishermanStageCutoffs = [-30, -10, 10, 30];
 
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+
 
 function getRandomElement(_list){
 	return _list[Math.floor(Math.random()*_list.length)];
@@ -126,16 +132,24 @@ function replaceHeaders(){
 		console.log("RESETTING BECAUSE CHANGE OF STAGE");
 		resetHeaders();
 	}
-	//need to add randomness here
-	model.headers.forEach(function(_header){
-		if(model.modifiedContent.headers.has(_header)){
-			replaceHeader(_header, $(_header).attr("originalReplacement"));
-		}
-		else{
-			replaceHeader(_header, getRandomElement(headersToChooseFrom));
-		}
-		
+	model.modifiedContent.headers.forEach(function(_header){
+		replaceHeader(_header, $(_header).attr("originalReplacement"));
 	});
+	for (var i = 0; i < 6-stageAfterReplace; i++) {
+		// loop through with a bunch replacing each second
+		if (randomShouldReplace()) {
+			var chosenHeader = getRandomItemFromSet(model.headers);
+			if(model.modifiedContent.headers.has(chosenHeader)){
+				replaceHeader(getRandomItemFromSet(model.headers), randomElementInList(headersToChooseFrom));
+			}
+			
+		}
+	}
+
+	//need to add randomness here
+
+
+	
 }
 
 function resetHeaders(){
@@ -149,7 +163,6 @@ function resetHeaders(){
 //helper function for replaceHeaders
 function replaceHeader(element, newText){
 	
-	console.log("setting header text to "+ newText);
 	var origText = $(element).text();
 	$(element).text(swapOutStats(newText));
 
@@ -160,7 +173,6 @@ function replaceHeader(element, newText){
 
 	
 	
-	console.log("one time");
 
 	$(element).addClass("alreadyModified");
 	$(element).attr("originalSrc", origText);
@@ -192,6 +204,7 @@ function changeHeaderBackToOriginal(element){
 
 //hyperlinks
 function replaceHyperlinks(){
+	console.log(model.modifiedContent.hyperlinks.size);
 	var hyperlinksImgsToChooseFrom = latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)];
 	
 	if(hyperlinksImgsToChooseFrom.length===0){
@@ -211,7 +224,11 @@ function replaceHyperlinks(){
 	// 	}
 	// });
 
-	for (i = 0; i < 6-stageAfterReplace; i++) {
+
+	// model.hyperlinks.forEach(function(_hl){
+	// 	modifyHyperlink(_hl, randomElementInList(hyperlinksImgsToChooseFrom));
+	// });
+	for (var i = 0; i < 6-stageAfterReplace; i++) {
 		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
 			modifyHyperlink(getRandomItemFromSet(model.hyperlinks), randomElementInList(hyperlinksImgsToChooseFrom));
@@ -229,7 +246,9 @@ function resetHyperlinks(){
 		if($(_hyperlink).hasClass("alreadyModified")){
 			changeHyperlinkBackToOriginal(_hyperlink);
 		}
+		$("_hyperlink").css("color", "black");
 	});
+
 }
 
 function modifyHyperlink(element, _hyperlinksImgsToChooseFrom){
@@ -243,6 +262,7 @@ function modifyHyperlink(element, _hyperlinksImgsToChooseFrom){
 	model.modifiedContent.hyperlinks.add(element);
 	$(element).addClass("fishermanPopUp");
 	$(element).addClass("alreadyModified");
+	$(element).css("color", "red");
 	//lmao
 	//$(element).attr("href", imgSrc);
 
@@ -261,20 +281,32 @@ function changeHyperlinkBackToOriginal(element){
 }
 
 $(document).ready(function(){
-
 	
-	$(document).on('click', ".fishermanPopUp", function() {
+	$(document).on('mousedown', ".fishermanPopUp", function() {
 		for(var i = 0; i< 3; i++){
 			var popupImg = new Image();
 		
 			
 			popupImg.onload = function() {
 				var w = window.open("", new Date().getTime(), "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
-		    	var $w = $(w.document.body);
-		    	$w.html("<body><style>img{width: 100%;height:100%;}</style>"+
-		    		"<img  src = '"+ this.src+ "'>"+
-		    		+"</body>");
-		    	console.log(this.src);
+		    	var src = this.src;
+				w.onload = function(){
+					$(w.document.head).html(
+						"<script src= 'http://code.jquery.com/jquery-3.4.1.js'"+
+	  					"integrity='sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU='"+
+	  					"crossorigin='anonymous'></script>"
+
+					);
+			    	$(w.document.body).html(
+			    		
+			    		"<style>img{width: 100%;height:100%;}</style>"+
+			    		"<img src = '" + src + "'>"
+			    	);
+
+				}
+
+		    	//src = (this.src).replaceAll("/", "ForwardSlash");
+				
 				
 				console.log(this.width +", " + this.height);
 			}
@@ -366,7 +398,9 @@ function swapOutStats(_header){
     for(var i = 0; i< wordsToReplace.length; i++){
         _header = _header.replace(wordsToReplace[i], latestGame[wordsToReplace[i]]);
     }
-    _header = _header.replace("{", "").replace("}", "");
+    _header = _header.replaceAll("{", "").replaceAll("}", "");
 
     return _header;
 }
+
+

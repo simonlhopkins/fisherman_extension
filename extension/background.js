@@ -58,7 +58,7 @@ function loadOurContent(){
     addHeader("Come back", [0, 1]);
     addHeader("I’ll be waiting, no matter how long it takes.", [0, 1]);
     addHeader("Have you ever tried out Bob’s Bait? I’m telling you, if you’re into buying branded bait that’s the stuff!", [3, 4]);
-    addHeader("You caught <fish_caught> fish already! A natural!", [4]);
+    addHeader("You caught {fish_caught} fish already! A natural!", [4]);
     
 
     // these ones could be paragraphs or inserted into paragraphs
