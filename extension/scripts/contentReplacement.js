@@ -20,6 +20,14 @@ function getStage(_rawFishermanState){
 	}
 	return i;
 }
+
+function getReplaceChancePerStage(_rawFishermanState){
+	// just a linear slope going downwards from not very frequent at x=45 to very frequent at x=-45.
+	// .95 at -45 to .05 at 45, much more frequent to replace something at high anger (stage 0, etc).
+	// return (-_rawFishermanState+45)*.01+.05
+	return (-_rawFishermanState+45)*.005+.05 // made it less frequent than the comment because that was wayy too often
+}
+
 //called every loop
 function replaceImagesWithPoloroids(){
 
@@ -33,13 +41,30 @@ function replaceImagesWithPoloroids(){
 		resetImages();
 	}
 	//need to add randomness here
-	model.images.forEach(function(_image){
-		replaceImage(_image, getRandomElement(imagesToChooseFrom));
-	});
-	
+	// model.images.forEach(function(_image){
+	// 	if (randomShouldReplace()) {
+	// 		replaceImage(_image, randomElementInList(imagesToChooseFrom));
+	// 	}
+	// });
+
+	for (i = 0; i < 6-lastStage; i++) {
+		// loop through with a bunch replacing each second
+		if (randomShouldReplace()) {
+			replaceImage(getRandomItemFromSet(model.images), randomElementInList(imagesToChooseFrom));
+		}
+	}
+
+	lastStage = getStage(latestGame.rawFishermanState);
 }
 
+function getRandomItemFromSet(set) {
+	let items = Array.from(set);
+    return items[Math.floor(Math.random() * items.length)];
+}
 
+function randomShouldReplace() {
+	return Math.random() <= getReplaceChancePerStage(latestGame.rawFishermanState)
+}
 
 function resetImages(){
 	// model.images.forEach(function(_image){
@@ -180,12 +205,18 @@ function replaceHyperlinks(){
 	}
 
 	//need to add randomness here
-	if(getStage(latestGame.rawFishermanState)<2){
-		model.hyperlinks.forEach(function(_hyperlink){
-			modifyHyperlink(_hyperlink, hyperlinksImgsToChooseFrom);
-		});
+	// model.hyperlinks.forEach(function(_hyperlink){
+	// 	if (randomShouldReplace()) {
+	// 		modifyHyperlink(_hyperlink, randomElementInList(hyperlinksImgsToChooseFrom));
+	// 	}
+	// });
+
+	for (i = 0; i < 6-lastStage; i++) {
+		// loop through with a bunch replacing each second
+		if (randomShouldReplace()) {
+			modifyHyperlink(getRandomItemFromSet(model.hyperlinks), randomElementInList(hyperlinksImgsToChooseFrom));
+		}
 	}
-	
 }
 
 function randomElementInList(list)
@@ -296,6 +327,7 @@ function debugWindow(){
 		"<p>lastSessionTime: "+latestGame.lastSessionTime/1000+"</p>"+
 		"<p>rawFishermanState: "+latestGame.rawFishermanState+"</p>"+
 		"<p>current stage: "+getStage(latestGame.rawFishermanState)+"</p>"+
+		"<p>replaceChance: "+getReplaceChancePerStage(latestGame.rawFishermanState)+"</p>"+
 		"<button type=\"button\" id=\"resetGameButton\">Reset Game</button>"+
 		"<button type=\"button\" id=\"increaseHappinessGameButton\">Increase Happiness Stage</button>"+
 		"<button type=\"button\" id=\"decreaseHappinessGameButton\">Decrease Happiness Stage</button>"

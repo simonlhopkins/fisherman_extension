@@ -1,16 +1,28 @@
 var currentTextArray = [];
-var maxLineSize = 60;
-var numLinesShown = 3;
+var maxLineSize = 50;
+var numLinesShown = 20;
 var currentTextIndex = 0;
+var interpolationTime = 0;
+var timeBetweenSentence = 0;
+
+
+function getRandomTextLocation()
+{
+    var point = {};
+    point.x = (Math.random() * CANVAS_WIDTH * 0.5);
+    point.y = (Math.random() * CANVAS_HEIGHT * 0.5);
+    return point;
+}
 
 function getTextToDisplay()
 {
-    return currentTextArray.slice(currentTextIndex, currentTextIndex + numLinesShown);
+    return currentTextArray[currentTextIndex];
 }
 
 function incrementTextIndex()
 {
     currentTextIndex++;
+    interpolationTime = (new Date()).getTime();
 }
 
 function fetchNewText()
@@ -22,35 +34,47 @@ function fetchNewText()
 
 function ingestText(text, timeForEachLine, timeBeforeFetchingNextStory)
 {
-    var splitList = text.split(" ");
-    var textLine = "";
-    var x = 0;
-    
-    for (; x < splitList.length; x++)
+    timeBetweenSentence = timeForEachLine;
+    var sentenceList = text.split("~~ ");
+    var y = 0;
+    for (; y < sentenceList.length; y++)
     {
-        if (textLine.length + splitList[x].length + 1 >= maxLineSize)
+        var x = 0;
+        var textLine = "";
+        var splitList = sentenceList[y].split(" ");
+        
+        var sentenceArray = [];
+        for (; x < splitList.length; x++)
         {
-            //needed if the first element is larger that the max line size. Just add it anyways.
-            if (x != 0)
+            if (textLine.length + splitList[x].length + 1 >= maxLineSize)
             {
-                currentTextArray.push(textLine);
+                //needed if the first element is larger that the max line size. Just add it anyways.
+                if (x != 0)
+                {
+                    sentenceArray.push(textLine);
+                }
+                
+                textLine = "";
             }
             
-            textLine = "";
+            textLine += splitList[x] + " ";
         }
         
-        textLine += splitList[x] + " ";
+        if (textLine.length > 0)
+        {
+            sentenceArray.push(textLine);
+        }
+        
+        var obj = {};
+        obj.text = sentenceArray;
+        obj.point = getRandomTextLocation()
+        currentTextArray.push(obj);
     }
-    
-    if (textLine.length > 0)
+    for (y = 0; y < currentTextArray.length; y++)
     {
-        currentTextArray.push(textLine);
-    }
-    
-    for (x = 0; x < currentTextArray.length; x++)
-    {
-        setTimeout(incrementTextIndex, (x + 1) * timeForEachLine * 1000);
+        setTimeout(incrementTextIndex, (y + 1) * timeForEachLine * 1000);
     }
     
     setTimeout(fetchNewText, ((currentTextArray.length + 1) * timeForEachLine + timeBeforeFetchingNextStory) * 1000);
+    interpolationTime = (new Date()).getTime();
 }
