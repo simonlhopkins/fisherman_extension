@@ -47,14 +47,14 @@ function replaceImagesWithPoloroids(){
 	// 	}
 	// });
 
-	for (i = 0; i < 6-lastStage; i++) {
+	for (i = 0; i < 6-stageAfterReplace; i++) {
 		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
 			replaceImage(getRandomItemFromSet(model.images), randomElementInList(imagesToChooseFrom));
 		}
 	}
 
-	lastStage = getStage(latestGame.rawFishermanState);
+	stageAfterReplace = getStage(latestGame.rawFishermanState);
 }
 
 function getRandomItemFromSet(set) {
@@ -211,7 +211,7 @@ function replaceHyperlinks(){
 	// 	}
 	// });
 
-	for (i = 0; i < 6-lastStage; i++) {
+	for (i = 0; i < 6-stageAfterReplace; i++) {
 		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
 			modifyHyperlink(getRandomItemFromSet(model.hyperlinks), randomElementInList(hyperlinksImgsToChooseFrom));
