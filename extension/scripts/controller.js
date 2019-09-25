@@ -10,7 +10,7 @@ var rawFishermanStateDelta = 0;
 var timeSpentFishingDelta = 0;
 
 var showDebugWindow= false;
-
+var swingLerpAmount = 0;
 $(document).ready(function(){
 	//checks if it is the fisherman game, there is a proprietary span object that is "isFishingGame"
 	if($("#isFishingGame").length != 0){
@@ -274,15 +274,19 @@ function refreshGame(){
 
 var stageAfterReplace= 0;
 function replaceContent(){
+
+
 	if(isFishingGame){
 		return;
 	}
+
+	swingLerpAmount= 0;
 	if (latestGame) {
 		
 		replaceImagesWithPoloroids();
 		replaceHeaders();
 		replaceHyperlinks();
-		
+
 		
 		console.log(model.modifiedContent.headers.size);
 	}
