@@ -1,6 +1,5 @@
 
 var fishermanStageCutoffs = [-30, -10, 10, 30];
-var lastStage = 2;
 
 function getStage(_rawFishermanState){
 
@@ -38,12 +37,25 @@ function replaceImagesWithPoloroids(){
 		resetImages();
 	}
 	//need to add randomness here
-	model.images.forEach(function(_image){
+	// model.images.forEach(function(_image){
+	// 	if (randomShouldReplace()) {
+	// 		replaceImage(_image, randomElementInList(imagesToChooseFrom));
+	// 	}
+	// });
+
+	for (i = 0; i < 6-lastStage; i++) {
+		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
-			replaceImage(_image, imagesToChooseFrom[0]);
+			replaceImage(getRandomItemFromSet(model.images), randomElementInList(imagesToChooseFrom));
 		}
-	});
+	}
+
 	lastStage = getStage(latestGame.rawFishermanState);
+}
+
+function getRandomItemFromSet(set) {
+	let items = Array.from(set);
+    return items[Math.floor(Math.random() * items.length)];
 }
 
 function randomShouldReplace() {
@@ -114,11 +126,20 @@ function replaceHeaders(){
 		resetHeaders();
 	}
 	//need to add randomness here
-	model.headers.forEach(function(_header){
+	// model.headers.forEach(function(_header){
+	// 	if (randomShouldReplace()) {
+	// 		replaceHeader(_header, swapOutStats(randomElementInList(headersToChooseFrom)));
+	// 	}
+	// });
+
+	for (i = 0; i < 6-lastStage; i++) {
+		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
-			replaceHeader(_header, swapOutStats(randomElementInList(headersToChooseFrom)));
+			replaceHeader(getRandomItemFromSet(model.headers), swapOutStats(randomElementInList(headersToChooseFrom)));
 		}
-	});
+	}
+
+	// update the stage for everyone
 	lastStage = getStage(latestGame.rawFishermanState);
 }
 
@@ -184,12 +205,18 @@ function replaceHyperlinks(){
 	}
 
 	//need to add randomness here
-	model.hyperlinks.forEach(function(_hyperlink){
+	// model.hyperlinks.forEach(function(_hyperlink){
+	// 	if (randomShouldReplace()) {
+	// 		modifyHyperlink(_hyperlink, randomElementInList(hyperlinksImgsToChooseFrom));
+	// 	}
+	// });
+
+	for (i = 0; i < 6-lastStage; i++) {
+		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
-			modifyHyperlink(_hyperlink, randomElementInList(hyperlinksImgsToChooseFrom));
+			modifyHyperlink(getRandomItemFromSet(model.hyperlinks), randomElementInList(hyperlinksImgsToChooseFrom));
 		}
-	});
-	lastStage = getStage(latestGame.rawFishermanState);
+	}
 }
 
 function randomElementInList(list)
