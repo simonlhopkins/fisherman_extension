@@ -47,6 +47,7 @@ function replaceImagesWithPoloroids(){
 	//reset on change
 	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
 		resetImages();
+		return;
 	}
 	//need to add randomness here
 	// model.images.forEach(function(_image){
@@ -58,6 +59,7 @@ function replaceImagesWithPoloroids(){
 	for (i = 0; i < 6-stageAfterReplace; i++) {
 		// loop through with a bunch replacing each second
 		if (randomShouldReplace()) {
+			console.log()
 			replaceImage(getRandomItemFromSet(model.images), randomElementInList(imagesToChooseFrom));
 		}
 	}
@@ -139,9 +141,12 @@ function replaceHeaders(){
 	});
 	for (var i = 0; i < 6-stageAfterReplace; i++) {
 		// loop through with a bunch replacing each second
+
 		if (randomShouldReplace()) {
+			console.log("replace now");
 			var chosenHeader = getRandomItemFromSet(model.headers);
-			if(model.modifiedContent.headers.has(chosenHeader)){
+			if(!model.modifiedContent.headers.has(chosenHeader)){
+
 				replaceHeader(getRandomItemFromSet(model.headers), randomElementInList(headersToChooseFrom));
 			}
 			
@@ -164,7 +169,7 @@ function resetHeaders(){
 
 //helper function for replaceHeaders
 function replaceHeader(element, newText){
-	
+	console.log("hello??");
 	var origText = $(element).text();
 	$(element).text(swapOutStats(newText));
 
@@ -217,6 +222,7 @@ function replaceHyperlinks(){
 	
 	if(getStage(latestGame.rawFishermanState)!= stageAfterReplace){
 		resetHyperlinks();
+		return;
 	}
 
 	//need to add randomness here
@@ -246,9 +252,10 @@ function randomElementInList(list)
 function resetHyperlinks(){
 	model.modifiedContent.hyperlinks.forEach(function(_hyperlink){
 		if($(_hyperlink).hasClass("alreadyModified")){
+
 			changeHyperlinkBackToOriginal(_hyperlink);
 		}
-		$("_hyperlink").css("color", "black");
+		
 	});
 
 }
@@ -275,10 +282,11 @@ function modifyHyperlink(element, _hyperlinksImgsToChooseFrom){
 }
 
 function changeHyperlinkBackToOriginal(element){
+	console.log("resetting");
 	model.modifiedContent.hyperlinks.delete(element);
-	$(element).mousedown(function(){});
 	$(element).removeClass("alreadyModified");
 	$(element).removeClass("fishermanPopUp");
+	$(element).css("color", "black");
 	
 }
 
@@ -333,7 +341,6 @@ function swingPage(){
 
 	var scale = Math.max(0, (-latestGame.rawFishermanState-30)+(swingLerpAmount/12.0)*rawFishermanStateDelta);
 	scale*=50;
-	console.log($("html").offset());
 	$("html").offset({top: Math.sin(lambda) * scale, left: Math.cos(lambda) * scale});
 	lambda+=0.1;
 	swingLerpAmount++;

@@ -29,6 +29,11 @@ function loadOurContent(){
     addImage("/images/OldManSunrise_polaroid.png", [2, 3, 4]);
     addImage("/images/OldSelfie_polaroid.png", [3, 4]);
     addImage("/images/FishMan_polaroid.png", [3, 4]);
+    addImage("/images/FishMan_polaroid.png", [3, 4]);
+
+    addImage("/images/FirstBoat_Polaroid.png", [2, 3, 4]);
+    addImage("/images/FishingSon_Polaroid", [1,2]);
+    addImage("/images/Shesamonster_Polaroid.png", [3, 4]);
 
     //headers
     // addHeader("fish w me bitch im mad u have spent like <timeSpentFishing> with me:(", [0]);
@@ -36,7 +41,6 @@ function loadOurContent(){
     // addHeader("thank you for everything you've done:)", [4]);
     // addHeader("I'm getting a lil lonley", [3]);
     // addHeader("I've only caught <fish_caught> fish with you and you've spent <timeSpentFishing> with me:(", [0, 1, 2]);
-    
 
     addHeader("I’ll be here waiting for you, and so will the fish!", [3, 4]);
     addHeader("I’ve caught a real big one! #shesamonster", [4]);
