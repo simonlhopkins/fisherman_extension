@@ -129,7 +129,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     	chrome.storage.sync.set({'game': emptyGame}, function(result) {
             var emptyGameData = new Object();
             emptyGameData.game = emptyGame;
-            loadOurContent();
+            //loadOurContent();
             chrome.tabs.sendMessage(sender.tab.id, {message: "setGame", data: emptyGameData}, function(){
 
             });
