@@ -130,6 +130,8 @@ window.addEventListener('message', (event) => {
         }
         else if (event.data.message === "setGame"){
             // overwrite the game stored on this script
+            console.log("set game recieved");
+            console.log(event);
             latestGame = event.data.data;
         }
         else if (event.data.message === "getGame"){
@@ -139,10 +141,10 @@ window.addEventListener('message', (event) => {
         }
         else if (event.data.message === "nextFishermanLine") {
             //sayLine(event.data.data);
-            var text = event.data.data.line;
-            var t1 = event.data.data.timeToNextStory;
-            var t2 = event.data.data.timeForEachLine;
-            ingestText(text, t2, t1);
+            //var text = event.data.data.line;
+            //var t1 = event.data.data.timeToNextStory;
+            //var t2 = event.data.data.timeForEachLine;
+            //ingestText(text, t2, t1);
         }
         // else {
         //     console.log("Fishing Game script received unknown message: " + event.data.message);
@@ -151,8 +153,11 @@ window.addEventListener('message', (event) => {
 });
 
 function requestNextLine() {
-    var data = { type: "FROM_PAGE", message: "requestNextFishermanLine" };
-    window.postMessage(data, "*");
+    
+    //var data = { type: "FROM_PAGE", message: "requestNextFishermanLine" };
+    //window.postMessage(data, "*");
+    var textObject = getNextLine();
+    ingestText(textObject.line, textObject.timeForEachLine, textObject.timeToNextStory);
 }
 
 function sayLine(lineData) {

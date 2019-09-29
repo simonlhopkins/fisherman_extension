@@ -11,6 +11,9 @@ var timeSpentFishingDelta = 0;
 
 var showDebugWindow= false;
 var swingLerpAmount = 0;
+
+
+
 $(document).ready(function(){
 	//checks if it is the fisherman game, there is a proprietary span object that is "isFishingGame"
 	if($("#isFishingGame").length != 0){
@@ -30,11 +33,12 @@ $(document).ready(function(){
 	        console.log("show debug window is now: " + showDebugWindow);
 	    }
 
+
 	});
 });
 
 window.addEventListener('message', (event) => {
-    // console.log(`Received message: ${event.data}`);
+    console.log(event);
     if (event.source != window)
         return;
 
@@ -48,6 +52,7 @@ window.addEventListener('message', (event) => {
     	else if (event.data.message === "setGame"){
             // overwrite the game stored on this script
             latestGame = event.data.data;
+                        console.log(event.data);
         }
         else if (event.data.message === "getGame"){
             // tell them what your copy of the game is
@@ -182,6 +187,12 @@ function onTabBlur() {
 
 
 function updateGameData(game) {
+       
+       if (game === undefined)
+       {
+       console.log("UNDEFINED GAME");
+       }
+       
 	if(focusedOnThisTab){
 		console.log("delta = "+ rawFishermanStateDelta);
 		game.rawFishermanState += rawFishermanStateDelta;
@@ -227,7 +238,7 @@ function onTabLoad() {
 
 	console.log("isFishingGame? :" + isFishingGame);
 	//gets the game from background script once the tab loads
-	chrome.runtime.sendMessage({message: "getGame" }, function(){});
+	chrome.runtime.sendMessage({message: "getGame" }, function(response){console.log(response)});
 	var d = new Date();
 	var n = d.getTime();
 

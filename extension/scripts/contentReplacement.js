@@ -1,5 +1,7 @@
 
 var fishermanStageCutoffs = [-30, -10, 10, 30];
+var globalReplacementContent = new Object();
+
 
 
 
@@ -39,7 +41,10 @@ function getReplaceChancePerStage(_rawFishermanState){
 //called every loop
 function replaceImagesWithPoloroids(){
 
-	var imagesToChooseFrom = latestGame.replacementContent.images[getStage(latestGame.rawFishermanState)];
+	if (globalReplacementContent.replacementContent === undefined) {
+		generateReplacementContent();
+	}
+	var imagesToChooseFrom = globalReplacementContent.replacementContent.images[getStage(latestGame.rawFishermanState)];
 	if(imagesToChooseFrom.length===0){
 		resetImages();
 		return;
@@ -125,7 +130,10 @@ function replaceImage(element, newSrc){
 
 
 function replaceHeaders(){
-	var headersToChooseFrom = latestGame.replacementContent.headers[getStage(latestGame.rawFishermanState)];
+	if (globalReplacementContent.replacementContent === undefined) {
+		generateReplacementContent();
+	}
+	var headersToChooseFrom = globalReplacementContent.replacementContent.headers[getStage(latestGame.rawFishermanState)];
 	if(headersToChooseFrom.length===0){
 		console.log("RESETTING BECAUSE LENGTH IS 0");
 		resetHeaders();
@@ -212,7 +220,10 @@ function changeHeaderBackToOriginal(element){
 //hyperlinks
 function replaceHyperlinks(){
 	console.log(model.modifiedContent.hyperlinks.size);
-	var hyperlinksImgsToChooseFrom = latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)];
+	if (globalReplacementContent.replacementContent === undefined) {
+		generateReplacementContent();
+	}
+	var hyperlinksImgsToChooseFrom = globalReplacementContent.replacementContent.popUps[getStage(latestGame.rawFishermanState)];
 	
 	if(hyperlinksImgsToChooseFrom.length===0){
 		resetHyperlinks();
@@ -298,8 +309,21 @@ $(document).ready(function(){
 		
 			
 			popupImg.onload = function() {
-				var w = window.open("", new Date().getTime(), "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
+
+				var w = window.open("about:blank", new Date().getTime(), "width="+this.width/4+", height="+this.height/4+", top="+ parseInt(Math.random()*1000)+", left= "+parseInt(Math.random()*1000)+", scrollbars=yes");
 		    	var src = this.src;
+
+		    	w.document.head.innerHTML = "<script src= 'http://code.jquery.com/jquery-3.4.1.js'"+
+	  					"integrity='sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU='"+
+	  					"crossorigin='anonymous'></script>"+
+	  					"<title>BUY BOB'S BAIT!</title>";
+	  			w.document.body.innerHTML = 
+	  					"<style>img{width: 100%;height:100%;}</style>"+
+			    		"<a href = 'http://www.thelonelyfisherman.com'><img src = '" + src + "'></a>";
+
+			    //the onload function doesnt seem to work right now.
+			    //so i am just hard coding the html for the window.
+			    //yes its not the proper way to do it but this way works.
 				w.onload = function(){
 					$(w.document.head).html(
 						"<script src= 'http://code.jquery.com/jquery-3.4.1.js'"+
@@ -313,8 +337,9 @@ $(document).ready(function(){
 			    	$(w.document.body).html(
 			    		
 			    		"<style>img{width: 100%;height:100%;}</style>"+
-			    		"<a href = 'https://kellyme213.github.io/games/fish/'><img src = '" + src + "'></a>"
+			    		"<a href = 'http://www.thelonelyfisherman.com'><img src = '" + src + "'></a>"
 			    	);
+
 
 				}
 
@@ -323,8 +348,10 @@ $(document).ready(function(){
 				
 				console.log(this.width +", " + this.height);
 			}
-
-			popupImg.src = getRandomElement(latestGame.replacementContent.popUps[getStage(latestGame.rawFishermanState)]);
+			if (globalReplacementContent.replacementContent === undefined) {
+				generateReplacementContent();
+			}
+			popupImg.src = getRandomElement(globalReplacementContent.replacementContent.popUps[getStage(latestGame.rawFishermanState)]);
 		}
 	});
 	if(!isFishingGame){

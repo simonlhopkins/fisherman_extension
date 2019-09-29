@@ -8,9 +8,10 @@ window.addEventListener('message', (event) => {
 
     if (event.data.type && (event.data.type === "FROM_PAGE")) {
     	if (event.data.message === "requestNextFishermanLine") {
-        	var lineData = getNextLine();
-        	var data = { type: "FROM_PAGE", message: "nextFishermanLine", data: lineData };
-            event.source.postMessage(data, "*"); // should only send it to who asked
+            //text is stored in the game now, not in the extension.
+        	//var lineData = getNextLine();
+        	//var data = { type: "FROM_PAGE", message: "nextFishermanLine", data: lineData };
+            //event.source.postMessage(data, "*"); // should only send it to who asked
         }
     }
 });
@@ -19,7 +20,8 @@ window.addEventListener('message', (event) => {
 //     sendResponse( {response:"Dummy response"} );
 // });
 
-
+/*
+ 
 function getNextLine() {
     
     var randIndex = Math.floor(Math.random() * storyLineData.length);
@@ -67,6 +69,6 @@ let storyLineData = [
                 "What’s the deal with all this social media stuff these days?~~ I don’t really get it.~~ Of course I made a Facebook page and whatnot to keep in touch with everybody I know.~~ I hardly use it though, it’s a bunch of bologna anyway.~~ I don’t need any of your “friend points” or whatever the hell they’re called to make me happy.~~ All I need are the fish.~~ They understand me, much better than anyone else does.~~ Well, I think you understand me, at least a little bit.~~ You listen to me.~~ You spend time with me.~~ You care about me.~~ Don’t you?~~ I care about you.~~ You’re my only real friend.",
                 "Some fellas drink while they fish, I used to be one of them, but it’s no fun really.~~ You always drink and fish on a summer afternoon.~~ So you’re drunk, hot, and sweaty as a pig.~~ Not to mention how rowdy most guys get once they’ve had a few.~~ How do you expect to catch any fish if you’re shouting at them?~~ I once left a fishing trip as soon as I saw that one of the guys had brought a cooler and a boombox with him.~~ I don’t have time to put up with that kinda shit!~~ It’s so much nicer to just sit and watch the waves come in.~~ Don’t need music, don’t need booze, don’t even really need a good conversation.~~ Just need that sorta peaceful nature to lull you in.~~ It keeps you calm.~~ You’re just resting.~~ And then… BAM!~~ That’s when you get a fish on the line!~~ And your heart gets pumping and you’re in it for the thrill!~~ You’re fighting that little bastard and then suddenly it’s over, as soon as it started.~~ Either he’s gotten away and snapped your line, or you’re looking him right in the eye and telling’ him you beat ‘im.~~ It’s always a pain in the ass when he takes a good lure though.~~ I’ve lost quite a few to some clever ones here and there.~~ That’s why I don’t bother with the expensive crap.~~ You’re going to lose it somehow and you could do just as good with a shoelace and some leftovers as with some $40 lure and $60 bait.~~ It’s a waste of money it is.~~ Fishing is simple, it’s up to people like us to keep it that way."
 ];
-
+*/
 //"Hey, welcome back [player name]!~~ I was worried I’d lost you!~~ The fish are biting and the weather is just perfect today!",
 //"Welcome back!~~ Me and the fish have certainly missed you [player name]!~~ Have a seat and join on in!~~ Hopefully I haven’t already caught all of them!",
