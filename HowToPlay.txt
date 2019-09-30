@@ -1,18 +1,18 @@
 Hi!
 If you're reading this you're probably wondering how to play this game.
-First things first, you're going to need either Chrome or Firefox installed. We tried it once on Firefox early in development so there's no guarantee that it works but according to Firefox documentation it should be pretty cross compatable.
+First things first, you're going to need either Chrome or Firefox installed. We tried it once on Firefox early in development so there's no guarantee that it works but according to Firefox documentation it should be pretty cross compatible.
 
 Assuming you've installed or already have Chrome:
 1. Type "chrome://extensions" into your search bar (without the quotes)
 2. Turn on Developer Mode with the switch on the top right of your screen.
 3. Click "Load Unpacked" and then select the folder called extension.
-4. Find the "Fisherman! 1.0" extension in the list of extensions and turn it on with the toggle switch (note that's also how you'll have to disable it if you want to free yourself).
-5. Then launch the game at https://kellyme213.github.io/games/fish/ and you're all set to play!
+4. Find the "The Lonely Fisherman" extension in the list of extensions and turn it on with the toggle switch (note that's also how you'll have to disable it if you want to free yourself).
+5. Then launch the game at http://www.thelonelyfisherman.com and you're all set to play!
 
 
 How to stop him:
 The only ways to stop him are to turn off the extension (using the same toggle that you had to turn on during step 4) or to remove the extension by clicking remove (nearby that same toggle).
-If the extension isn't installed you can still play the fishing game but you'll find that the fisherman is much quieter and so is the rest of your internet.
+If the extension isn't installed you can still play the fishing game but you'll find that the fisherman doesn't disrupt your internet browsing experience.
 
 
 
