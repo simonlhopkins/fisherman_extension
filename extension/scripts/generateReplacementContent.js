@@ -16,7 +16,7 @@ function generateReplacementContent() {
 function loadOurContent(){
     //images
     addImage("/images/FishermanandSon_polaroid.png", [0, 1]);
-    addImage("/images/FirstBoat_polaroid.png", [0, 1]);
+    addImage("/images/FirstBoat_polaroid.png", [0, 1, 2, 3, 4]);
     addImage("/images/OldManStorm1_polaroid.png", [1, 2]);
     addImage("/images/OldManBigFish_polaroid.png", [1, 2, 3]);
     addImage("/images/FishSoBig_polaroid.png", [2, 3]);
@@ -24,11 +24,11 @@ function loadOurContent(){
     addImage("/images/OldManSunrise_polaroid.png", [2, 3, 4]);
     addImage("/images/OldSelfie_polaroid.png", [3, 4]);
     addImage("/images/FishMan_polaroid.png", [3, 4]);
-    addImage("/images/FishMan_polaroid.png", [3, 4]);
-
-    addImage("/images/FirstBoat_Polaroid.png", [2, 3, 4]);
     addImage("/images/FishingSon_Polaroid", [1,2]);
     addImage("/images/Shesamonster_Polaroid.png", [3, 4]);
+    addImage("/images/CaptAhab_Polaroid.png", [1, 2, 3]);
+    addImage("/images/Sunrise_Polaroid.png", [1, 2, 3]);
+
 
     //headers
     // addHeader("fish w me bitch im mad u have spent like <timeSpentFishing> with me:(", [0]);
